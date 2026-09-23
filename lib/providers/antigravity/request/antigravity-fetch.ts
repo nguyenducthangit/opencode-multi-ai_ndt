@@ -35,17 +35,46 @@ type ManagerLike = {
   get(provider: "antigravity", id: string): AccountOf<"antigravity"> | undefined;
 };
 
-function parseRetryTime(text: string): number | undefined {
-  if (!text) return undefined;
-  const match = text.match(/reset after\s*(\d+h)?\s*(\d+m)?\s*(\d+s)?/i);
-  if (!match) return undefined;
+const DEFAULT_ANTIGRAVITY_QUOTA_COOLDOWN_MS = 5 * 60_000;
 
-  let totalMs = 0;
-  if (match[1]) totalMs += parseInt(match[1], 10) * 3600 * 1000;
-  if (match[2]) totalMs += parseInt(match[2], 10) * 60 * 1000;
-  if (match[3]) totalMs += parseInt(match[3], 10) * 1000;
+function parseRetryTime(text: string, headers?: Headers): number | undefined {
+  if (headers) {
+    const retryAfter = headers.get("retry-after");
+    if (retryAfter) {
+      const seconds = parseInt(retryAfter, 10);
+      if (!Number.isNaN(seconds) && seconds > 0) {
+        return Date.now() + seconds * 1000;
+      }
+    }
+  }
 
-  return totalMs > 0 ? Date.now() + totalMs : undefined;
+  if (text) {
+    const match = text.match(/resets?\s+(?:in|after)\s*(\d+h)?\s*(\d+m)?\s*(\d+s)?/i);
+    if (match) {
+      let totalMs = 0;
+      if (match[1]) totalMs += parseInt(match[1], 10) * 3600 * 1000;
+      if (match[2]) totalMs += parseInt(match[2], 10) * 60 * 1000;
+      if (match[3]) totalMs += parseInt(match[3], 10) * 1000;
+      if (totalMs > 0) return Date.now() + totalMs;
+    }
+
+    try {
+      const parsed = JSON.parse(text);
+      const details = parsed?.error?.details;
+      if (Array.isArray(details)) {
+        for (const d of details) {
+          if (typeof d?.retryDelay === "string") {
+            const sec = parseFloat(d.retryDelay);
+            if (!Number.isNaN(sec) && sec > 0) return Date.now() + Math.ceil(sec * 1000);
+          }
+        }
+      }
+    } catch {
+      // not json
+    }
+  }
+
+  return undefined;
 }
 
 export function createAntigravityFetch(
@@ -139,10 +168,6 @@ export function createAntigravityFetch(
           }
 
           const errorBody = await res.text();
-          logger.warn(
-            `Antigravity request failed: HTTP ${res.status} from ${endpoint} (account: ${account?.email || accountId})`,
-            { error: errorBody.slice(0, 300) },
-          );
 
           if (
             res.status === 403 &&
@@ -157,13 +182,20 @@ export function createAntigravityFetch(
           }
 
           if (res.status === 429 || res.status === 403) {
-            const resetAt = parseRetryTime(errorBody);
+            const resetAt =
+              parseRetryTime(errorBody, res.headers) ??
+              Date.now() + DEFAULT_ANTIGRAVITY_QUOTA_COOLDOWN_MS;
             await manager.markQuotaExhausted("antigravity", accountId, resetAt);
             logger.info(
-              `Antigravity account ${account?.email || accountId} quota exhausted, rotating to next account`,
+              `Antigravity account ${account?.email || accountId} quota exhausted, cooldown until ${new Date(resetAt).toLocaleTimeString()}, rotating to next account`,
             );
             break; // Break inner endpoint loop, rotate account
           }
+
+          logger.warn(
+            `Antigravity request failed: HTTP ${res.status} from ${endpoint} (account: ${account?.email || accountId})`,
+            { error: errorBody.slice(0, 300) },
+          );
 
           if (res.status === 401) {
             // Try refreshing once

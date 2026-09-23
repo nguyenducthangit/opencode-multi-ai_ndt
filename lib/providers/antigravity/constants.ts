@@ -36,53 +36,42 @@ export const ANTIGRAVITY_DEFAULT_MODELS: Record<string, {
   thinkingBudget?: number;
   description: string;
 }> = {
+  "gemini-3.8-flash-high": {
+    name: "Gemini 3.8 Flash High (Deep Reasoning)",
+    thinkingBudget: 8192,
+    description: "Full thinking model for complex logic, algorithms, and deep reasoning",
+  },
+  "gemini-3.7-flash": {
+    name: "Gemini 3.7 Flash Medium (Balanced)",
+    thinkingBudget: 4096,
+    description: "Balanced reasoning flash model for everyday programming & agent execution",
+  },
+  "gemini-3.6-flash": {
+    name: "Gemini 3.6 Flash (Fast / Light Reasoning)",
+    thinkingBudget: 2048,
+    description: "Light reasoning with fast response times for quick coding tasks",
+  },
+  "gemini-3.1-pro": {
+    name: "Gemini 3.1 Pro Low (Flagship)",
+    thinkingBudget: 4096,
+    description: "Most powerful model for large codebase comprehension and system design",
+  },
   "gemini-3-flash": {
     name: "Gemini 3 Flash (Instant, Zero Thinking)",
     thinkingBudget: 0,
     description: "Ultra-fast instant generation without thinking delay - ideal for code generation & agent edits",
   },
-  "gemini-3.6-flash-high": {
-    name: "Gemini 3.6 Flash High (Deep Reasoning)",
-    thinkingBudget: 16384,
-    description: "Full thinking model for complex logic, algorithms, and deep reasoning",
-  },
-  "gemini-3.6-flash-low": {
-    name: "Gemini 3.6 Flash Low (Balanced)",
-    thinkingBudget: 2048,
-    description: "Light reasoning with fast response times for everyday programming tasks",
-  },
-  "gemini-pro-agent": {
-    name: "Gemini Pro Agent (Flagship Architecture)",
-    thinkingBudget: 16384,
-    description: "Most powerful model for large codebase comprehension and system design",
-  },
-  "gemini-3.1-pro-low": {
-    name: "Gemini 3.1 Pro Low",
-    thinkingBudget: 4096,
-    description: "Pro model with low thinking budget for faster responses",
-  },
-  "gemini-3.8-flash-high": {
-    name: "Gemini 3.8 Flash High (Alias)",
-    thinkingBudget: 16384,
-    description: "Alias routed to Gemini 3.6 Flash High internal engine",
-  },
-  "gemini-3.8-flash-low": {
-    name: "Gemini 3.8 Flash Low (Alias)",
-    thinkingBudget: 2048,
-    description: "Alias routed to Gemini 3.6 Flash Low internal engine",
-  },
-  "gemini-3.8-flash": {
-    name: "Gemini 3.8 Flash (Balanced)",
-    thinkingBudget: 2048,
-    description: "Extremely fast, balanced thinking for general coding",
-  },
-  "gemini-2.5-pro": {
-    name: "Gemini 2.5 Pro (Flagship)",
-    description: "High capability, deep architectural coding",
-  },
   "claude-sonnet-4-6": {
-    name: "Claude Sonnet 4.6 (Antigravity Thinking)",
-    description: "Claude Sonnet routed via Antigravity Cloud Code backend",
+    name: "Claude Sonnet 4.6 (Thinking)",
+    description: "Claude Sonnet 4.6 routed via Antigravity Cloud Code pool",
+  },
+  "claude-opus-4-6-thinking": {
+    name: "Claude Opus 4.6 (High Thinking)",
+    description: "Claude Opus 4.6 routed via Antigravity Cloud Code pool",
+  },
+  "gpt-oss-120b-medium": {
+    name: "GPT-OSS 120B (Medium Thinking)",
+    description: "Open-weights 120B reasoning model routed via Antigravity Cloud Code pool",
   },
 };
 

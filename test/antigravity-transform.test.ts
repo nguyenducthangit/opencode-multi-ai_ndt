@@ -81,13 +81,13 @@ describe("Antigravity Request Transformer", () => {
     expect(payload.model).toBe("gemini-3.6-flash-high");
     expect(payload.userAgent).toBe("antigravity");
     expect(payload.request.sessionId).toBe("session-123");
+    expect(payload.request.systemInstruction?.parts[0].text).toContain("You are an expert Flutter engineer.");
 
     const contents = payload.request.contents;
     expect(contents).toHaveLength(2);
 
     expect(contents[0].role).toBe("user");
-    expect(contents[0].parts[0].text).toContain("System Instructions:\nYou are an expert Flutter engineer.");
-    expect(contents[0].parts[1].text).toBe("Explain StateNotifier in GetX.");
+    expect(contents[0].parts[0].text).toBe("Explain StateNotifier in GetX.");
 
     expect(contents[1].role).toBe("model");
     expect(contents[1].parts[0].text).toBe("GetX uses GetxController.");
@@ -187,6 +187,12 @@ describe("Antigravity Request Transformer", () => {
       { projectId: "test-proj" },
     );
     expect(highPayload.model).toBe("gemini-3.6-flash-high");
-    expect(highPayload.request.generationConfig?.thinkingConfig?.thinkingBudget).toBe(16384);
+    expect(highPayload.request.generationConfig?.thinkingConfig?.thinkingBudget).toBe(8192);
+
+    const effortPayload = transformOpenAiToGemini(
+      { model: "gemini-3.8-flash", reasoning_effort: "high", messages: [{ role: "user", content: "Hi" }] },
+      { projectId: "test-proj" },
+    );
+    expect(effortPayload.request.generationConfig?.thinkingConfig?.thinkingBudget).toBe(8192);
   });
 });

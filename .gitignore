@@ -16,3 +16,4 @@ multi-xai-models.json
 *.log
 .env
 .env.*
+.DS_Store

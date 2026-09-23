@@ -57,13 +57,21 @@ function extractText(content: OpenAiMessage["content"]): string {
   return "";
 }
 
-export function resolveInternalModel(modelName?: string): {
+export function resolveInternalModel(
+  modelName?: string,
+  effort?: string,
+): {
   internalModel: string;
   thinkingBudget?: number;
 } {
   const raw = (modelName || "gemini-3-flash").replace(/^(antigravity\/|ag\/)/, "").toLowerCase();
 
-  // Instant / zero thinking models (FASTEST)
+  let customBudget: number | undefined;
+  if (effort === "low") customBudget = 1024;
+  else if (effort === "medium") customBudget = 2048;
+  else if (effort === "high") customBudget = 8192;
+
+  // 1. Instant / zero thinking model
   if (
     raw === "gemini-3-flash" ||
     raw === "gemini-flash" ||
@@ -73,24 +81,6 @@ export function resolveInternalModel(modelName?: string): {
     return { internalModel: "gemini-3-flash", thinkingBudget: 0 };
   }
 
-  // Extra low thinking
-  if (raw.includes("extra-low")) {
-    return { internalModel: "gemini-3.5-flash-extra-low", thinkingBudget: 1024 };
-  }
-
-  // Low / Medium thinking
-  if (raw.includes("low")) {
-    if (raw.includes("pro")) {
-      return { internalModel: "gemini-3.1-pro-low", thinkingBudget: 4096 };
-    }
-    return { internalModel: "gemini-3.6-flash-low", thinkingBudget: 2048 };
-  }
-
-  // Gemini Pro models
-  if (raw.includes("pro") || raw === "gemini-3.1-pro" || raw === "gemini-2.5-pro") {
-    return { internalModel: "gemini-pro-agent", thinkingBudget: 16384 };
-  }
-
   // Claude models supported by Antigravity Cloud Code
   if (raw.includes("claude-sonnet") || raw === "claude-3-7-sonnet-thought") {
     return { internalModel: "claude-sonnet-4-6" };
@@ -98,21 +88,38 @@ export function resolveInternalModel(modelName?: string): {
   if (raw.includes("claude-opus")) {
     return { internalModel: "claude-opus-4-6-thinking" };
   }
+  if (raw.includes("gpt-oss")) {
+    return { internalModel: "gpt-oss-120b-medium" };
+  }
 
-  // High thinking / Agent (gemini-3.8-flash, gemini-3.8-flash-high, gemini-3.6-flash-high, gemini-3.7-flash, gemini-flash)
-  if (
-    raw.includes("high") ||
-    raw.includes("agent") ||
-    raw.includes("flash") ||
-    raw.includes("3.8") ||
-    raw.includes("3.7") ||
-    raw.includes("3.6")
-  ) {
-    return { internalModel: "gemini-3.6-flash-high", thinkingBudget: 16384 };
+  // 2. Gemini 3.8 Flash High (Deep Reasoning)
+  if (raw === "gemini-3.8-flash-high" || (raw.includes("3.8") && !raw.includes("low")) || raw.includes("high") || raw.includes("agent")) {
+    return { internalModel: "gemini-3.6-flash-high", thinkingBudget: customBudget ?? 8192 };
+  }
+
+  // 3. Gemini 3.7 Flash Medium (Balanced)
+  if (raw.includes("3.7") || raw.includes("medium")) {
+    return { internalModel: "gemini-3.6-flash-low", thinkingBudget: customBudget ?? 4096 };
+  }
+
+  // 4. Gemini 3.1 Pro (Flagship Architecture)
+  if (raw.includes("pro") || raw.includes("3.1")) {
+    return { internalModel: "gemini-3.1-pro-low", thinkingBudget: customBudget ?? 4096 };
+  }
+
+  // 5. Gemini 3.6 Flash (Fast / Light Reasoning)
+  if (raw.includes("3.6") || raw.includes("low") || raw.includes("flash")) {
+    return { internalModel: "gemini-3.6-flash-low", thinkingBudget: customBudget ?? 2048 };
   }
 
   return { internalModel: "gemini-3-flash", thinkingBudget: 0 };
 }
+
+const AGENT_CODE_REVIEW_PROMPT =
+  "Core Principles for Code Editing & Review:\n" +
+  "1. Thorough Code Review: Before modifying any file, review surrounding context, imports, and references to avoid regressions.\n" +
+  "2. Efficient Tool Usage: Avoid repeated micro-reads (e.g. reading 20-50 lines repeatedly). Read complete functions or files once to understand full scope before proposing edits.\n" +
+  "3. Safe Changes: Maintain clean formatting, type safety, and error handling. Verify code integrity before completing.";
 
 export function transformOpenAiToGemini(
   body: OpenAiRequestBody,
@@ -122,7 +129,11 @@ export function transformOpenAiToGemini(
   },
 ): GeminiInternalPayload {
   const rawModel = body.model || "gemini-3-flash";
-  const { internalModel, thinkingBudget } = resolveInternalModel(rawModel);
+  const reasoningEffort =
+    typeof body.reasoning_effort === "string"
+      ? body.reasoning_effort
+      : undefined;
+  const { internalModel, thinkingBudget } = resolveInternalModel(rawModel, reasoningEffort);
   const mappedModelName = internalModel;
 
   const rawMessages = Array.isArray(body.messages) ? body.messages : [];
@@ -147,11 +158,6 @@ export function transformOpenAiToGemini(
   for (let i = 0; i < filteredMessages.length; i++) {
     const msg = filteredMessages[i];
     const parts: GeminiPart[] = [];
-
-    // Prepend system prompt to the first user message
-    if (contents.length === 0 && msg.role === "user" && systemText) {
-      parts.push({ text: `System Instructions:\n${systemText}\n\nUser Request:\n` });
-    }
 
     if (msg.role === "user") {
       const txt = extractText(msg.content);
@@ -236,7 +242,7 @@ export function transformOpenAiToGemini(
   }
 
   const generationConfig: GeminiGenerationConfig = {
-    maxOutputTokens: 16384,
+    maxOutputTokens: 65536,
   };
   if (typeof body.temperature === "number") {
     generationConfig.temperature = body.temperature;
@@ -253,6 +259,9 @@ export function transformOpenAiToGemini(
   }
 
   const sessionId = options.sessionId || body.sessionId || crypto.randomUUID();
+  const fullSystem = systemText
+    ? `${AGENT_CODE_REVIEW_PROMPT}\n\n${systemText}`
+    : AGENT_CODE_REVIEW_PROMPT;
 
   return {
     project: options.projectId,
@@ -261,6 +270,9 @@ export function transformOpenAiToGemini(
     requestType: "agent",
     requestId: `agent-${crypto.randomUUID()}`,
     request: {
+      systemInstruction: {
+        parts: [{ text: fullSystem }],
+      },
       contents: mergedContents,
       ...(geminiTools ? { tools: geminiTools } : {}),
       generationConfig,

@@ -54,14 +54,14 @@ const plugin: Plugin = async () => {
         p.options = {
           baseURL: ANTIGRAVITY_BASE_URL,
           apiKey: DUMMY_API_KEY,
-          accountSelectionStrategy: "round-robin",
+          accountSelectionStrategy: "sticky",
         };
       } else {
         const opts = p.options as Record<string, unknown>;
         if (opts.baseURL === undefined) opts.baseURL = ANTIGRAVITY_BASE_URL;
         if (opts.apiKey === undefined) opts.apiKey = DUMMY_API_KEY;
         if (opts.accountSelectionStrategy === undefined) {
-          opts.accountSelectionStrategy = "round-robin";
+          opts.accountSelectionStrategy = "sticky";
         }
       }
 

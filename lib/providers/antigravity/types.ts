@@ -48,6 +48,9 @@ export interface GeminiInternalPayload {
   requestType: string;
   requestId: string;
   request: {
+    systemInstruction?: {
+      parts: GeminiPart[];
+    };
     contents: GeminiContent[];
     tools?: GeminiTool[];
     generationConfig?: GeminiGenerationConfig;

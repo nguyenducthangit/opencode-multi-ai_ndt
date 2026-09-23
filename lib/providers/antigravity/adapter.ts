@@ -18,7 +18,7 @@ export type AntigravityAdapterOptions = {
 export function createAntigravityAdapter(
   options: AntigravityAdapterOptions = {},
 ): TransportProviderAdapter {
-  const strategy = options.accountSelectionStrategy ?? "round-robin";
+  const strategy = options.accountSelectionStrategy ?? "sticky";
 
   return {
     id: PROVIDER_ID,

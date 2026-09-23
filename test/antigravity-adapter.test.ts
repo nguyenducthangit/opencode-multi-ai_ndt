@@ -18,14 +18,14 @@ describe("Antigravity Adapter", () => {
       { name: string; limit?: { context: number; output: number } }
     >;
 
-    expect(models["gemini-3.8-flash"]).toBeDefined();
-    expect(models["gemini-3-flash"]).toBeDefined();
-    expect(models["gemini-3.8-flash-low"]).toBeDefined();
     expect(models["gemini-3.8-flash-high"]).toBeDefined();
-    expect(models["gemini-2.5-pro"]).toBeDefined();
+    expect(models["gemini-3.7-flash"]).toBeDefined();
+    expect(models["gemini-3.6-flash"]).toBeDefined();
+    expect(models["gemini-3.1-pro"]).toBeDefined();
+    expect(models["gemini-3-flash"]).toBeDefined();
 
-    expect(models["gemini-3.8-flash"].limit?.context).toBe(1_048_576);
-    expect(models["gemini-2.5-pro"].limit?.context).toBe(2_097_152);
+    expect(models["gemini-3.8-flash-high"].limit?.context).toBe(1_048_576);
+    expect(models["gemini-3.1-pro"].limit?.context).toBe(2_097_152);
   });
 
   it("formats listSubtitle and detailLines correctly", () => {
