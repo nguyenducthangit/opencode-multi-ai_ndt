@@ -7,7 +7,11 @@ import type {
   ProviderAccountView,
 } from "../core/accounts.js";
 import type { OpenCodeGoQuotaSnapshot } from "../core/adapter.js";
-import type { AccountMetadata, ProviderKind } from "../core/schemas.js";
+import type {
+  AccountMetadata,
+  DeepSeekAccountMetadata,
+  ProviderKind,
+} from "../core/schemas.js";
 import {
   formatAge,
   formatBillingReset,
@@ -1936,22 +1940,128 @@ export function buildOpenCodeGoTools(
   };
 }
 
+export function buildDeepSeekTools(
+  manager: AccountManager,
+): Record<string, ToolDefinition> {
+  const view = manager.providerView("deepseek");
+  const shared = buildSharedTools(
+    view,
+    "deepseek",
+    "DeepSeek",
+    "No DeepSeek accounts. Run `op-deepseek add --api-key …` or `op-deepseek import` to add one.",
+    (n) =>
+      [
+        `Add DeepSeek account (pool ${n}/20):`,
+        "",
+        "Recommended:",
+        "  op-deepseek add --api-key KEY [--label LABEL]",
+        "  op-deepseek import --from-9router",
+        "  deepseek-add apiKey=… (agent tool)",
+        "",
+        "Then: deepseek-list / deepseek-switch / deepseek-limits / deepseek-health",
+      ].join("\n"),
+  );
+
+  const sel = selectorArgs("deepseek-list");
+  const target = (args: { index?: number; id?: string }): AccountMetadata =>
+    resolveAccount(view.list(), args);
+
+  return {
+    ...shared,
+
+    "deepseek-add": tool({
+      description: "Add a DeepSeek API key (sk-…) to the multi-ai account pool.",
+      args: {
+        apiKey: schema.string().describe("DeepSeek API key (sk-…)"),
+        label: schema.string().optional().describe("human-friendly label"),
+      },
+      async execute({ apiKey, label }) {
+        const { addDeepSeekKey } = await import(
+          "../providers/deepseek/auth/add-key.js"
+        );
+        const account = await addDeepSeekKey({ apiKey, label, manager });
+        return `Added DeepSeek account ${account.label || account.accountId} (id: ${account.accountId}).`;
+      },
+    }),
+
+    "deepseek-import": tool({
+      description: "Import DeepSeek accounts from ~/.n9router/db.json.",
+      args: {
+        path: schema
+          .string()
+          .optional()
+          .describe("path to 9Router db.json (defaults to ~/.n9router/db.json)"),
+      },
+      async execute({ path: dbPath }) {
+        const { importDeepSeekFrom9Router } = await import(
+          "../providers/deepseek/auth/import-9router.js"
+        );
+        const res = await importDeepSeekFrom9Router({ dbPath, manager });
+        return `Imported ${res.imported} account(s), skipped ${res.skipped}.`;
+      },
+    }),
+
+    "deepseek-limits": tool({
+      description: "Inspect DeepSeek quota/balance for an account or all accounts.",
+      args: {
+        ...sel,
+        probe: schema.boolean().optional().describe("force live /user/balance fetch"),
+      },
+      async execute(args) {
+        const { probeDeepSeekBalance } = await import(
+          "../providers/deepseek/request/balance.js"
+        );
+        if (args.index !== undefined || args.id !== undefined) {
+          const acc = target(args);
+          const dsAcc = acc.provider === "deepseek" ? acc : undefined;
+          const key = acc.accessToken ?? acc.refreshToken;
+          if (args.probe) {
+            const probe = await probeDeepSeekBalance(key);
+            if (probe.ok) {
+              await view.setDeepSeekBalance(acc.accountId, {
+                balance: typeof probe.balance === "number" ? probe.balance : undefined,
+                currency: typeof probe.currency === "string" ? probe.currency : undefined,
+                grantedBalance: typeof probe.grantedBalance === "number" ? probe.grantedBalance : undefined,
+                toppedUpBalance: typeof probe.toppedUpBalance === "number" ? probe.toppedUpBalance : undefined,
+                isAvailable: typeof probe.isAvailable === "boolean" ? probe.isAvailable : undefined,
+              });
+              return `Probed ${acc.label || acc.accountId}: Balance = ${probe.currency || "CNY"} ${probe.balance ?? 0}`;
+            }
+            return `Failed to probe ${acc.accountId}: ${probe.reason || "unknown error"}`;
+          }
+          return `Account ${acc.label || acc.accountId}: Balance = ${dsAcc?.currency || "CNY"} ${dsAcc?.balance ?? "unknown"}`;
+        }
+        const accounts = view.list().filter((a): a is DeepSeekAccountMetadata => a.provider === "deepseek");
+        if (accounts.length === 0) return "No DeepSeek accounts in pool.";
+        const lines: string[] = ["DeepSeek Accounts Balance:"];
+        for (const a of accounts) {
+          lines.push(`• ${a.label || a.accountId}: ${a.currency || "CNY"} ${a.balance ?? "unknown"}`);
+        }
+        return lines.join("\n");
+      },
+    }),
+  };
+}
+
 export function buildTools(manager: AccountManager): {
   xai: Record<string, ToolDefinition>;
   codex: Record<string, ToolDefinition>;
   kiro: Record<string, ToolDefinition>;
   opencodeGo: Record<string, ToolDefinition>;
+  deepseek: Record<string, ToolDefinition>;
   all: Record<string, ToolDefinition>;
 } {
   const xai = buildXaiTools(manager);
   const codex = buildCodexTools(manager);
   const kiro = buildKiroTools(manager);
   const opencodeGo = buildOpenCodeGoTools(manager);
+  const deepseek = buildDeepSeekTools(manager);
   return {
     xai,
     codex,
     kiro,
     opencodeGo,
-    all: { ...xai, ...codex, ...kiro, ...opencodeGo },
+    deepseek,
+    all: { ...xai, ...codex, ...kiro, ...opencodeGo, ...deepseek },
   };
 }

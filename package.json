@@ -22,12 +22,14 @@
     "op-codex": "./scripts/cli.ts",
     "op-kiro": "./scripts/cli.ts",
     "op-opencode-go": "./scripts/cli.ts",
+    "op-deepseek": "./scripts/cli.ts",
     "opencode-multi-ai": "./scripts/cli.ts",
     "opencode-multi-xai": "./scripts/cli.ts",
     "opencode-multi-codex": "./scripts/cli.ts",
     "xai-multi": "./scripts/cli.ts",
     "codex-multi": "./scripts/cli.ts",
-    "kiro-multi": "./scripts/cli.ts"
+    "kiro-multi": "./scripts/cli.ts",
+    "deepseek-multi": "./scripts/cli.ts"
   },
   "exports": {
     ".": "./index.ts",
@@ -36,6 +38,7 @@
     "./lib/plugin/kiro": "./lib/plugin/kiro.ts",
     "./lib/plugin/antigravity": "./lib/plugin/antigravity.ts",
     "./lib/plugin/opencode-go": "./lib/plugin/opencode-go.ts",
+    "./lib/plugin/deepseek": "./lib/plugin/deepseek.ts",
     "./tui": "./lib/plugin/tui.tsx"
   },
   "scripts": {
@@ -47,7 +50,14 @@
     "install-cli": "bash scripts/install-cli.sh",
     "install:global": "bash scripts/install-cli.sh --path",
     "setup": "bash install.sh --path",
-    "install-tui": "bun scripts/install-tui.ts"
+    "install-tui": "bun scripts/install-tui.ts",
+    "appeal": "bun scripts/antigravity-auto-appeal.ts",
+    "rebuild": "bun scripts/rebuild-supervisor.ts",
+    "runtime-gate": "bun scripts/android-runtime-gate.ts",
+    "reference-record": "bun scripts/reference-recorder.ts",
+    "visual-diff": "bun scripts/visual-regression.ts",
+    "native-index": "bun scripts/native-intelligence-index.ts",
+    "rebuild-autopilot": "bun scripts/rebuild-autopilot.ts"
   },
   "dependencies": {
     "@aws/codewhisperer-streaming-client": "1.0.45",

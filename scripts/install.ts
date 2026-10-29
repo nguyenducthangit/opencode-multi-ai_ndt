@@ -46,6 +46,12 @@ import {
 } from "../lib/providers/antigravity/constants.js";
 import { resolveAntigravityMultiModels } from "../lib/providers/antigravity/models-sync.js";
 import {
+  DEEPSEEK_API_BASE,
+  DUMMY_API_KEY as DEEPSEEK_DUMMY_API_KEY,
+  PROVIDER_ID as DEEPSEEK_PROVIDER_ID,
+} from "../lib/providers/deepseek/constants.js";
+import { resolveDeepSeekMultiModels } from "../lib/providers/deepseek/models-sync.js";
+import {
   DEFAULT_MODELS as XAI_DEFAULT_MODELS,
   PROVIDER_ID as XAI_PROVIDER_ID,
   XAI_API_BASE,
@@ -74,6 +80,8 @@ const KIRO_PROVIDER_NPM = "@ai-sdk/openai-compatible";
 const KIRO_PROVIDER_NAME = "Kiro Multi-Account";
 const ANTIGRAVITY_PROVIDER_NPM = "@ai-sdk/openai-compatible";
 const ANTIGRAVITY_PROVIDER_NAME = "Antigravity Multi-Account (Gemini)";
+const DEEPSEEK_PROVIDER_NPM = "@ai-sdk/openai-compatible";
+const DEEPSEEK_PROVIDER_NAME = "DeepSeek Multi-Account";
 
 const CONFIG_SCHEMA = "https://opencode.ai/config.json";
 
@@ -93,6 +101,7 @@ export const PLUGIN_PACKAGE_SUBPATHS = [
   `${PLUGIN_PACKAGE}/lib/plugin/kiro`,
   `${PLUGIN_PACKAGE}/lib/plugin/antigravity`,
   `${PLUGIN_PACKAGE}/lib/plugin/opencode-go`,
+  `${PLUGIN_PACKAGE}/lib/plugin/deepseek`,
 ] as const;
 
 export interface ProviderChange {
@@ -231,11 +240,15 @@ export function isOurPluginKey(key: string, desired: string[] = []): boolean {
   if (key.includes(`${path.sep}lib${path.sep}plugin${path.sep}opencode-go`)) {
     return true;
   }
+  if (key.includes(`${path.sep}lib${path.sep}plugin${path.sep}deepseek`)) {
+    return true;
+  }
   if (
     key.includes("/lib/plugin/xai") ||
     key.includes("/lib/plugin/codex") ||
     key.includes("/lib/plugin/kiro") ||
-    key.includes("/lib/plugin/opencode-go")
+    key.includes("/lib/plugin/opencode-go") ||
+    key.includes("/lib/plugin/deepseek")
   ) {
     return true;
   }
@@ -339,10 +352,15 @@ function pathsReferToSamePlugin(a: string, b: string): boolean {
     na.includes("plugin/opencode-go") || na.endsWith("/opencode-go");
   const bOpenCodeGo =
     nb.includes("plugin/opencode-go") || nb.endsWith("/opencode-go");
+  const aDeepSeek =
+    na.includes("plugin/deepseek") || na.endsWith("/deepseek");
+  const bDeepSeek =
+    nb.includes("plugin/deepseek") || nb.endsWith("/deepseek");
   if (aXai && bXai) return true;
   if (aCodex && bCodex) return true;
   if (aKiro && bKiro) return true;
   if (aOpenCodeGo && bOpenCodeGo) return true;
+  if (aDeepSeek && bDeepSeek) return true;
   return false;
 }
 
@@ -611,6 +629,64 @@ async function mergeAntigravityProvider(
   return { id: ANTIGRAVITY_PROVIDER_ID, added, updated };
 }
 
+async function mergeDeepSeekProvider(
+  config: Record<string, unknown>,
+): Promise<ProviderChange> {
+  if (!isPlainObject(config.provider)) {
+    config.provider = {};
+  }
+  const provider = config.provider as Record<string, unknown>;
+
+  const existing = isPlainObject(provider[DEEPSEEK_PROVIDER_ID])
+    ? (provider[DEEPSEEK_PROVIDER_ID] as Record<string, unknown>)
+    : undefined;
+
+  const added = existing === undefined;
+  let updated = false;
+  const entry: Record<string, unknown> = { ...(existing ?? {}) };
+
+  if (entry.npm === undefined) {
+    entry.npm = DEEPSEEK_PROVIDER_NPM;
+    if (!added) updated = true;
+  }
+  if (entry.name === undefined) {
+    entry.name = DEEPSEEK_PROVIDER_NAME;
+    if (!added) updated = true;
+  }
+
+  const options = isPlainObject(entry.options)
+    ? { ...(entry.options as Record<string, unknown>) }
+    : {};
+  if (options.baseURL === undefined) {
+    options.baseURL = `${DEEPSEEK_API_BASE}/v1`;
+    if (!added) updated = true;
+  }
+  if (
+    options.apiKey === undefined ||
+    options.apiKey === null ||
+    options.apiKey === ""
+  ) {
+    options.apiKey = DEEPSEEK_DUMMY_API_KEY;
+    if (!added) updated = true;
+  }
+  entry.options = options;
+
+  const prevModels = isPlainObject(entry.models)
+    ? (entry.models as Record<string, unknown>)
+    : {};
+  const nextModels = await resolveDeepSeekMultiModels({
+    allowNetwork: false,
+    userModels: prevModels,
+  });
+  if (JSON.stringify(prevModels) !== JSON.stringify(nextModels)) {
+    if (!added) updated = true;
+  }
+  entry.models = nextModels;
+
+  provider[DEEPSEEK_PROVIDER_ID] = entry;
+  return { id: DEEPSEEK_PROVIDER_ID, added, updated };
+}
+
 async function maybeBackup(
   configPath: string,
   raw: string | null,
@@ -686,6 +762,7 @@ export async function installProvider(
   const codex = await mergeCodexProvider(config);
   const kiro = await mergeKiroProvider(config);
   const antigravity = await mergeAntigravityProvider(config);
+  const deepseek = await mergeDeepSeekProvider(config);
 
   // opencode-go is BUILT-IN: catalog provides npm/baseURL/env and auth.json
   // provides the key — so there is deliberately NO mergeOpenCodeGoProvider
@@ -749,7 +826,7 @@ export async function installProvider(
     created,
     backedUp,
     backupPath,
-    providers: [xai, codex, kiro, antigravity],
+    providers: [xai, codex, kiro, antigravity, deepseek],
     pluginEntriesAdded,
     legacyPluginsRemoved,
     skillsInstalled,

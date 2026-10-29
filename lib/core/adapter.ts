@@ -20,7 +20,8 @@ export type ProviderId =
   | "codex-multi"
   | "kiro-multi"
   | "antigravity-multi"
-  | "opencode-go-multi";
+  | "opencode-go-multi"
+  | "deepseek-multi";
 
 /**
  * Headers init without relying on a DOM lib entry.

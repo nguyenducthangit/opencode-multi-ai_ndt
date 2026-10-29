@@ -63,7 +63,7 @@ export const OPENCODE_GO_ONLY_COMMANDS = [
   "set-cred",
 ] as const satisfies readonly CliCommand[];
 
-export const IMPORT_PROVIDERS = ["codex", "kiro"] as const satisfies readonly ProviderKind[];
+export const IMPORT_PROVIDERS = ["codex", "kiro", "deepseek"] as const satisfies readonly ProviderKind[];
 
 /** Commands that may run without --provider when argv0 is op-ai (show both). */
 export const PROVIDER_OPTIONAL_COMMANDS = new Set<string>([
@@ -149,6 +149,14 @@ export function resolveProviderFromArgv0(
   ) {
     return "opencode-go";
   }
+  if (
+    base.includes("op-deepseek") ||
+    base.includes("deepseek-multi") ||
+    base === "opencode-multi-deepseek" ||
+    base.endsWith("multi-deepseek")
+  ) {
+    return "deepseek";
+  }
   return undefined;
 }
 
@@ -162,6 +170,7 @@ export function parseProviderFlag(
   if (v === "codex" || v === "c" || v === "chatgpt" || v === "openai") return "codex";
   if (v === "kiro" || v === "k" || v === "codewhisperer") return "kiro";
   if (v === "opencode-go" || v === "go" || v === "g") return "opencode-go";
+  if (v === "deepseek" || v === "ds") return "deepseek";
   return undefined;
 }
 

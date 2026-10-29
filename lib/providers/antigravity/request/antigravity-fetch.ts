@@ -28,7 +28,7 @@ type ManagerLike = {
     id: string,
     resetAt?: number,
   ): Promise<void>;
-  markEntitlementBlocked(provider: "antigravity", id: string): Promise<void>;
+  markEntitlementBlocked(provider: "antigravity", id: string, reason?: string): Promise<void>;
   markDeadCandidate(provider: "antigravity", id: string): Promise<void>;
   recordUsage?(provider: "antigravity", id: string, snap: Record<string, unknown>): Promise<void>;
   touchLastUsed(provider: "antigravity", id: string): Promise<void>;
@@ -139,12 +139,12 @@ export function createAntigravityFetch(
 
       const endpoints = [
         {
-          url: `${ANTIGRAVITY_BASE_URL}/v1internal:streamGenerateContent?alt=sse`,
+          url: "https://cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
           isPrimary: true,
           timeoutMs: 60000,
         },
         {
-          url: "https://cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
+          url: "https://daily-cloudcode-pa.googleapis.com/v1internal:streamGenerateContent?alt=sse",
           isPrimary: false,
           timeoutMs: 60000,
         },
@@ -185,7 +185,7 @@ export function createAntigravityFetch(
             (errorBody.includes("VALIDATION_REQUIRED") ||
               errorBody.includes("PERMISSION_DENIED"))
           ) {
-            await manager.markEntitlementBlocked("antigravity", accountId);
+            await manager.markEntitlementBlocked("antigravity", accountId, "entitlement-blocked");
             logger.warn(
               `Antigravity account ${account?.email || accountId} requires verification (VALIDATION_REQUIRED), blocked and rotating`,
             );

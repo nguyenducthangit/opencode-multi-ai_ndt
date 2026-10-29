@@ -2,6 +2,7 @@ import type {
   AccountMetadata,
   AccountStorage,
   CodexAccountMetadata,
+  DeepSeekAccountMetadata,
   KiroAccountMetadata,
   OpenCodeGoAccountMetadata,
   ProviderKind,
@@ -40,6 +41,7 @@ const PROVIDER_ORDER: readonly ProviderKind[] = [
   "xai",
   "kiro",
   "opencode-go",
+  "deepseek",
 ];
 
 const PROVIDER_ID_TO_KIND: Readonly<Record<string, ProviderKind>> = {
@@ -47,10 +49,12 @@ const PROVIDER_ID_TO_KIND: Readonly<Record<string, ProviderKind>> = {
   "xai-multi": "xai",
   "kiro-multi": "kiro",
   "opencode-go-multi": "opencode-go",
+  "deepseek-multi": "deepseek",
   codex: "codex",
   xai: "xai",
   kiro: "kiro",
   "opencode-go": "opencode-go",
+  deepseek: "deepseek",
 };
 
 export function providerKindFromId(
@@ -335,6 +339,25 @@ function opencodeGoRow(
   };
 }
 
+function deepseekRow(
+  account: DeepSeekAccountMetadata,
+  sessionActive: boolean,
+): ActiveQuotaRow {
+  let detail: string | undefined;
+  if (typeof account.balance === "number") {
+    detail = `Balance: ${account.currency ?? "CNY"} ${account.balance}`;
+  }
+  return {
+    provider: "deepseek",
+    providerLabel: "DeepSeek",
+    displayName: accountDisplayName(account),
+    detail: detail ?? "active",
+    meter: meterBar(undefined),
+    accountId: account.accountId,
+    sessionActive,
+  };
+}
+
 /** Short status for static-key accounts: active / cooling / dead. */
 function openCodeGoStatusDetail(account: OpenCodeGoAccountMetadata): string {
   if (account.subscriptionStatus === "dead") return "dead";
@@ -380,6 +403,9 @@ export function buildActiveQuotaRows(
         break;
       case "opencode-go":
         rows.push(opencodeGoRow(acc, sessionActive));
+        break;
+      case "deepseek":
+        rows.push(deepseekRow(acc, sessionActive));
         break;
     }
   }

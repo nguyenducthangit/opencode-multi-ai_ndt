@@ -130,6 +130,11 @@ const FIXTURES = {
     },
   }),
 
+  modelNotSupportedDetail: JSON.stringify({
+    detail:
+      "The 'gpt-6-sol' model is not supported when using Codex with a ChatGPT account.",
+  }),
+
   // --- workspace dead ---
   deactivatedWorkspace402: JSON.stringify({
     detail: { code: "deactivated_workspace" },
@@ -374,6 +379,12 @@ describe("classifyResponse — entitlement-blocked", () => {
   it("classifies subscription.does.not.include as entitlement-blocked", () => {
     expect(
       classifyResponse(403, {}, FIXTURES.subscriptionDoesNotInclude),
+    ).toEqual({ kind: "entitlement-blocked" });
+  });
+
+  it("classifies flat detail 'model is not supported when using Codex' (HTTP 400) as entitlement-blocked", () => {
+    expect(
+      classifyResponse(400, {}, FIXTURES.modelNotSupportedDetail),
     ).toEqual({ kind: "entitlement-blocked" });
   });
 

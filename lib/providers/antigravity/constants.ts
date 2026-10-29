@@ -3,7 +3,8 @@ import type { ProviderId } from "../../core/adapter.js";
 
 export const PROVIDER_ID: ProviderId = "antigravity-multi";
 
-export const ANTIGRAVITY_BASE_URL = "https://daily-cloudcode-pa.googleapis.com";
+export const ANTIGRAVITY_BASE_URL = "https://cloudcode-pa.googleapis.com";
+export const ANTIGRAVITY_DAILY_URL = "https://daily-cloudcode-pa.googleapis.com";
 export const ANTIGRAVITY_SANDBOX_URL = "https://daily-cloudcode-pa.sandbox.googleapis.com";
 export const ANTIGRAVITY_PROD_URL = "https://cloudcode-pa.googleapis.com";
 
@@ -56,15 +57,35 @@ export const ANTIGRAVITY_DEFAULT_MODELS: Record<string, {
     thinkingBudget: 2048,
     description: "Light reasoning with fast response times for quick coding tasks",
   },
-  "gemini-3.1-pro": {
-    name: "Gemini 3.1 Pro Low (Flagship)",
-    thinkingBudget: 4096,
-    description: "Most powerful model for large codebase comprehension and system design",
-  },
   "gemini-3-flash": {
     name: "Gemini 3 Flash (Instant, Zero Thinking)",
     thinkingBudget: 0,
     description: "Ultra-fast instant generation without thinking delay - ideal for code generation & agent edits",
+  },
+  "gemini-2.5-pro": {
+    name: "Gemini 2.5 Pro (Flagship)",
+    thinkingBudget: 4096,
+    description: "Most capable flagship model for large codebase comprehension and system design (2M context)",
+  },
+  "gemini-3.1-pro": {
+    name: "Gemini 3.1 Pro (Flagship)",
+    thinkingBudget: 4096,
+    description: "High-reasoning model for large codebase comprehension and complex refactoring",
+  },
+  "gemini-2.5-flash": {
+    name: "Gemini 2.5 Flash (Lightweight)",
+    thinkingBudget: 0,
+    description: "Fast lightweight multimodal model for general programming tasks",
+  },
+  "gemini-pro-agent": {
+    name: "Gemini Pro Agent (High Reasoning)",
+    thinkingBudget: 8192,
+    description: "Agentic flagship model for autonomous multi-step planning, coding and tools",
+  },
+  "gemini-3-flash-agent": {
+    name: "Gemini 3 Flash Agent (Autonomous Agent)",
+    thinkingBudget: 8192,
+    description: "Autonomous reasoning agent model co-optimized with Antigravity tool calling harness",
   },
   "claude-sonnet-4-6": {
     name: "Claude Sonnet 4.6 (Thinking)",

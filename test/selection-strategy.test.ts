@@ -207,5 +207,20 @@ describe("antigravity selection strategy toggling", () => {
     const third = mgr.selectAccount("antigravity", attempted, "round-robin");
     expect(third?.accountId).toBe("ag-3");
   });
+
+  it("persists codexSelectionStrategy and cycles correctly", () => {
+    process.env.MULTI_AI_SETTINGS_PATH = settingsTmp;
+    resetSelectionStrategyForTests();
+
+    expect(getSelectionStrategy("codex")).toBe("sticky");
+    expect(cycleSelectionStrategy("codex")).toBe("round-robin");
+    expect(getSelectionStrategy("codex")).toBe("round-robin");
+
+    const content = JSON.parse(fs.readFileSync(settingsTmp, "utf8")) as Record<string, unknown>;
+    expect(content.codexSelectionStrategy).toBe("round-robin");
+
+    resetSelectionStrategyForTests();
+    expect(getSelectionStrategy("codex")).toBe("round-robin");
+  });
 });
 

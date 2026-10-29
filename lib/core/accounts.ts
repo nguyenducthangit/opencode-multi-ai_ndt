@@ -8,6 +8,7 @@ import type {
   AccountSelectionStrategy,
   AccountStorage,
   CooldownReason,
+  LastSwitchReason,
   OpenCodeGoAccountMetadata,
   ProviderKind,
 } from "./schemas.js";
@@ -108,6 +109,13 @@ export function createDefaultRefreshHandlers(): RefreshDrivers {
         expiresAt: Number.MAX_SAFE_INTEGER,
       }),
     },
+    deepseek: {
+      refresh: async (account) => ({
+        accessToken: account.accessToken ?? account.refreshToken,
+        refreshToken: account.refreshToken,
+        expiresAt: Number.MAX_SAFE_INTEGER,
+      }),
+    },
   };
 }
 
@@ -169,6 +177,15 @@ type KiroUsageSnapshot = {
   readonly observedAt?: number;
 };
 
+export type DeepSeekBalanceSnapshot = {
+  readonly balance?: number;
+  readonly currency?: string;
+  readonly grantedBalance?: number;
+  readonly toppedUpBalance?: number;
+  readonly isAvailable?: boolean;
+  readonly observedAt?: number;
+};
+
 export interface ProviderAccountView {
   readonly provider: ProviderKind;
   list(): AccountMetadata[];
@@ -196,6 +213,7 @@ export interface ProviderAccountView {
   recordPlan(id: string, snap: PlanSnapshot): Promise<void>;
   recordUsage(id: string, snap: UsageSnapshot): Promise<void>;
   recordKiroUsage(id: string, snap: KiroUsageSnapshot): Promise<void>;
+  setDeepSeekBalance(id: string, snap: DeepSeekBalanceSnapshot): Promise<void>;
   /**
    * Persist the opencode-go WORKSPACE dashboard quota snapshot onto an
    * account (opencode-go only). Quota is workspace-level — shared across all
@@ -979,9 +997,16 @@ export class AccountManager {
     });
   }
 
+  /**
+   * Quarantine the account behind a permanent entitlement / allowlist gate.
+   * The credential stays VALID — the account recovers on re-login.
+   *
+   * @param reason canonical switch reason (defaults to "entitlement-blocked").
+   */
   async markEntitlementBlocked(
     provider: ProviderKind,
     id: string,
+    reason: LastSwitchReason = "entitlement-blocked",
   ): Promise<void> {
     await this.mutateStorage((storage) => {
       const account = storage.accounts.find((candidate) =>
@@ -994,14 +1019,26 @@ export class AccountManager {
         return;
       }
       account.entitlementBlocked = true;
+      account.lastSwitchReason = reason;
       demoteAccountInProvider(storage, provider, account);
       switchStickyIfUnselectable(storage, provider, id);
     });
   }
 
+  /**
+   * Mark the account TERMINAL (subscriptionStatus = "dead").
+   *
+   * ONLY valid for credential-death or provider-disable signals:
+   *   - "auth-failure"      → OAuth refresh grant `invalid_grant` / revoked token
+   *   - "provider-disabled" → upstream provider disabled the account (e.g. ToS)
+   *
+   * NEVER use this for ordinary request failures or quota exhaustion — those
+   * are recoverable (see markQuotaExhausted / recordCooldown).
+   */
   async markDeadCandidate(
     provider: ProviderKind,
     id: string,
+    reason: LastSwitchReason = "auth-failure",
   ): Promise<void> {
     const now = Date.now();
     await this.mutateStorage((storage) => {
@@ -1016,6 +1053,7 @@ export class AccountManager {
       }
       account.subscriptionStatus = "dead";
       account.subscriptionCheckedAt = now;
+      account.lastSwitchReason = reason;
       demoteAccountInProvider(storage, provider, account);
       switchStickyIfUnselectable(storage, provider, id, now);
     });
@@ -1315,6 +1353,21 @@ export class AccountManager {
     });
   }
 
+  async setDeepSeekBalance(
+    id: string,
+    snap: DeepSeekBalanceSnapshot,
+  ): Promise<void> {
+    await this.mutateNonToken("deepseek", id, (account) => {
+      if (account.provider !== "deepseek") return;
+      account.balance = snap.balance;
+      account.currency = snap.currency;
+      account.grantedBalance = snap.grantedBalance;
+      account.toppedUpBalance = snap.toppedUpBalance;
+      account.isAvailable = snap.isAvailable;
+      account.usageObservedAt = snap.observedAt ?? Date.now();
+    });
+  }
+
   /**
    * Update (or clear) the per-account opencode-go dashboard credential pair.
    *
@@ -1604,6 +1657,7 @@ export class AccountManager {
       recordPlan: (id, snap) => this.recordPlan(provider, id, snap),
       recordUsage: (id, snap) => this.recordUsage(provider, id, snap),
       recordKiroUsage: (id, snap) => this.recordKiroUsage(provider, id, snap),
+      setDeepSeekBalance: (id, snap) => this.setDeepSeekBalance(id, snap),
       setOpenCodeGoQuota: (id, quota) => this.setOpenCodeGoQuota(id, quota),
       setOpenCodeGoCred: (id, partial) => this.setOpenCodeGoCred(id, partial),
       switchTo: (id) => this.switchTo(provider, id),

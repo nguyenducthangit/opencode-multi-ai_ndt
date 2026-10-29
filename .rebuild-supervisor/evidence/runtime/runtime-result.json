@@ -1,0 +1,9 @@
+{
+  "task": "runtime",
+  "device": "R58R43PCQNE",
+  "integration": "integration_test",
+  "skippedFramesMax": 0,
+  "maxSkippedFrames": 16,
+  "fatalRuntimeSignal": false,
+  "flutterExitCode": 1
+}

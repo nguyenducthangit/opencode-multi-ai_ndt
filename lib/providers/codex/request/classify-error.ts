@@ -36,7 +36,7 @@ export const QUOTA_EXHAUSTED_RE =
  * for the same model — mark entitlement-blocked, do NOT treat as quota.
  */
 export const ENTITLEMENT_RE =
-  /usage_not_included|not[\s_.-]*included[\s_.-]*in[\s_.-]*your[\s_.-]*plan|subscription[\s_.-]*does[\s_.-]*not[\s_.-]*include/i;
+  /usage_not_included|not[\s_.-]*included[\s_.-]*in[\s_.-]*your[\s_.-]*plan|subscription[\s_.-]*does[\s_.-]*not[\s_.-]*include|not[\s_.-]*supported[\s_.-]*when[\s_.-]*using[\s_.-]*codex|do(?:es)?[\s_.-]*not[\s_.-]*have[\s_.-]*access[\s_.-]*to[\s_.-]*(?:the[\s_.-]*)?model/i;
 
 /**
  * Credential / session death. Anchored to auth language only — must NOT match
@@ -408,11 +408,13 @@ function parseEnvelope(body: string | object): ErrorEnvelope {
       };
     }
 
-    // Flat shape: { error: "...", code: "..." }, with a `message` fallback.
+    // Flat shape: { error: "...", code: "..." }, with message / detail fallback.
     // OAuth token endpoint often returns { error: "invalid_grant" }.
+    // ChatGPT backend returns flat { detail: "The '...' model is not supported..." }.
     const code = typeof rec.code === "string" ? rec.code : undefined;
     const error = typeof rec.error === "string" ? rec.error : undefined;
     const message = typeof rec.message === "string" ? rec.message : undefined;
+    const detail = typeof rec.detail === "string" ? rec.detail : undefined;
     // When error is the OAuth code string itself (invalid_grant), treat as code.
     const oauthCode =
       error !== undefined && AUTH_DEAD_CODE_RE.test(error.trim())
@@ -420,7 +422,7 @@ function parseEnvelope(body: string | object): ErrorEnvelope {
         : undefined;
     return {
       code: code ?? oauthCode,
-      error: error ?? message,
+      error: error ?? message ?? detail,
       resetsAtMs: coerceEpochMs(rec.resets_at) ?? coerceEpochMs(rec.reset_at),
     };
   }

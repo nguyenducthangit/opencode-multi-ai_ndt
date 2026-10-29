@@ -27,6 +27,9 @@ import {
 import {
   PROVIDER_ID as ANTIGRAVITY_PROVIDER_ID,
 } from "../lib/providers/antigravity/constants.js";
+import {
+  PROVIDER_ID as DEEPSEEK_PROVIDER_ID,
+} from "../lib/providers/deepseek/constants.js";
 
 let dir: string;
 let configPath: string;
@@ -57,7 +60,7 @@ describe("installProvider — creates from absent", () => {
     const result = await installProvider(configPath);
 
     expect(result.created).toBe(true);
-    expect(result.providers).toHaveLength(4);
+    expect(result.providers).toHaveLength(5);
     expect(result.providers.every((p) => p.added)).toBe(true);
     expect(result.pluginEntriesAdded).toEqual([]);
 
@@ -231,6 +234,7 @@ describe("installProvider — merges without clobbering", () => {
           [CODEX_PROVIDER_ID]: { name: "Kept Codex" },
           [KIRO_PROVIDER_ID]: { name: "Kept Kiro" },
           [ANTIGRAVITY_PROVIDER_ID]: { name: "Kept Antigravity" },
+          [DEEPSEEK_PROVIDER_ID]: { name: "Kept DeepSeek" },
         },
       }),
       "utf8",

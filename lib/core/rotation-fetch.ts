@@ -17,6 +17,7 @@ import type {
   ProviderKind,
   SuccessRecordSink,
 } from "./adapter.js";
+import type { LastSwitchReason } from "./schemas.js";
 import { logger } from "./logger.js";
 import {
   getSessionOptions,
@@ -96,7 +97,11 @@ export interface RotationManager {
     resetAt: number,
   ): Promise<void>;
 
-  markEntitlementBlocked(provider: ProviderKind, id: string): Promise<void>;
+  markEntitlementBlocked(
+    provider: ProviderKind,
+    id: string,
+    reason?: LastSwitchReason,
+  ): Promise<void>;
 
   recordCooldown(
     provider: ProviderKind,
@@ -105,7 +110,11 @@ export interface RotationManager {
     until: number,
   ): Promise<void>;
 
-  markDeadCandidate(provider: ProviderKind, id: string): Promise<void>;
+  markDeadCandidate(
+    provider: ProviderKind,
+    id: string,
+    reason?: LastSwitchReason,
+  ): Promise<void>;
 
   touchLastUsed(provider: ProviderKind, id: string): Promise<void>;
 
@@ -290,7 +299,7 @@ async function handleAttempt(
     }
 
     case "entitlement-blocked": {
-      await manager.markEntitlementBlocked(provider, id);
+      await manager.markEntitlementBlocked(provider, id, "entitlement-blocked");
       ctx.warnEntitlement(id);
       return { action: "rotate" };
     }
@@ -460,7 +469,7 @@ export function createRotationFetch(
         accessToken = tokens.accessToken;
       } catch (err) {
         if (isInvalidGrantError(err)) {
-          await manager.markDeadCandidate(provider, id);
+          await manager.markDeadCandidate(provider, id, "auth-failure");
         } else {
           await sleep(NETWORK_BACKOFF_MS);
         }
@@ -513,7 +522,7 @@ export function createRotationFetch(
           refreshedToken = fresh.accessToken;
         } catch (err) {
           if (isInvalidGrantError(err)) {
-            await manager.markDeadCandidate(provider, id);
+            await manager.markDeadCandidate(provider, id, "auth-failure");
           } else {
             await sleep(NETWORK_BACKOFF_MS);
           }

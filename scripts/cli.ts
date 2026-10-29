@@ -24,6 +24,7 @@ import {
 import type { ProviderKind } from "../lib/core/schemas.js";
 import {
   buildCodexTools,
+  buildDeepSeekTools,
   buildKiroTools,
   buildOpenCodeGoTools,
   buildTools,
@@ -51,14 +52,16 @@ function usage(forced?: ProviderKind): string {
           ? "op-kiro"
           : forced === "opencode-go"
             ? "op-opencode-go"
-            : "op-ai";
+            : forced === "deepseek"
+              ? "op-deepseek"
+              : "op-ai";
   const providerHint =
     forced === undefined
-      ? "  --provider xai|codex|kiro|opencode-go   Required for mutating commands on op-ai"
+      ? "  --provider xai|codex|kiro|opencode-go|deepseek   Required for mutating commands on op-ai"
       : `  (provider forced: ${forced} via bin name)`;
 
   const lines = [
-    `${bin} — SuperGrok + ChatGPT/Codex + Kiro + OpenCode Go multi-account CLI for OpenCode`,
+    `${bin} — SuperGrok + ChatGPT/Codex + Kiro + OpenCode Go + DeepSeek multi-account CLI for OpenCode`,
     "",
     "Usage:",
     `  ${bin}                     Open TUI (default)`,
@@ -67,7 +70,7 @@ function usage(forced?: ProviderKind): string {
     "",
     "Provider:",
     providerHint,
-    "  Aliases: op-xai / xai-multi → xai;  op-codex / codex-multi → codex;  op-kiro / kiro-multi → kiro;  op-opencode-go → opencode-go",
+    "  Aliases: op-xai / xai-multi → xai;  op-codex / codex-multi → codex;  op-kiro / kiro-multi → kiro;  op-opencode-go → opencode-go;  op-deepseek → deepseek",
     "",
     "Commands:",
     "  help                    Show this help",
@@ -119,11 +122,17 @@ function usage(forced?: ProviderKind): string {
       "  (rotation: opencode-go-rotate agent tool — restarts opencode to apply)",
     );
   }
+  if (forced === undefined || forced === "deepseek") {
+    lines.push(
+      "  add --api-key KEY [--label LABEL]    DeepSeek: add static API key",
+      "  import [--file PATH]                 DeepSeek: import from 9router/JSON",
+    );
+  }
 
   lines.push(
     "",
     "Language: MULTI_AI_LANG=en|vi  or  --lang vi  (default: en)",
-    "  In TUI press g to toggle language; Tab / 1 / 2 / 3 switch provider tabs.",
+    "  In TUI press g to toggle language; Tab / 1 / 2 / 3 / 4 / 6 switch provider tabs.",
     "",
     "Examples:",
     `  ${bin}`,
@@ -133,12 +142,15 @@ function usage(forced?: ProviderKind): string {
     "  op-codex import --file ~/.codex/auth.json",
     "  op-kiro add",
     "  op-kiro import --api-key ksk_…",
+    "  op-opencode-go add --api-key …",
+    "  op-deepseek add --api-key …",
     "  op-codex remove --index 1 --confirm",
     "",
     "Add account:",
     "  opencode auth login   # pick xai-multi / codex-multi / kiro-multi",
     "  op-xai add | op-codex add | op-kiro add",
     "  op-opencode-go add --api-key …   (static key; no OAuth)",
+    "  op-deepseek add --api-key …      (static key; no OAuth)",
     "",
     "Note: do not run `opencode xai-add` / `opencode codex-add` —",
     "OpenCode treats those as project paths.",
@@ -170,6 +182,7 @@ function toolsFor(
   if (provider === "xai") return buildXaiTools(manager);
   if (provider === "codex") return buildCodexTools(manager);
   if (provider === "kiro") return buildKiroTools(manager);
+  if (provider === "deepseek") return buildDeepSeekTools(manager);
   return buildOpenCodeGoTools(manager);
 }
 
@@ -308,6 +321,30 @@ async function runAdd(
     return;
   }
 
+  if (provider === "deepseek") {
+    const apiKey = strFlag(flags, "api-key") ?? strFlag(flags, "apiKey");
+    if (!apiKey) {
+      console.error(
+        "op-deepseek add requires --api-key KEY [--label LABEL]",
+      );
+      process.exitCode = 1;
+      return;
+    }
+    const label = strFlag(flags, "label");
+    const { addDeepSeekKey } = await import(
+      "../lib/providers/deepseek/auth/add-key.js"
+    );
+    const account = await addDeepSeekKey({
+      apiKey,
+      label: label && label.trim().length > 0 ? label.trim() : undefined,
+      manager,
+    });
+    console.log(
+      `Added DeepSeek account ${account.label ?? account.accountId} (id: ${account.accountId})`,
+    );
+    return;
+  }
+
   const {
     loginWithApiKey,
     loginWithIdcDevice,
@@ -411,7 +448,31 @@ async function runImport(
     return;
   }
 
-  console.error("import is Codex- or Kiro-only. Use op-codex / op-kiro.");
+  if (provider === "deepseek") {
+    const manager = createManager();
+    await manager.load();
+    const { importDeepSeekFrom9Router } = await import(
+      "../lib/providers/deepseek/auth/import-9router.js"
+    );
+    const file = strFlag(flags, "file") ?? strFlag(flags, "path");
+    const result = await importDeepSeekFrom9Router({
+      dbPath: file,
+      manager,
+    });
+    for (const acc of result.accounts) {
+      console.log(`imported ${acc.label ?? acc.accountId}`);
+    }
+    for (const err of result.errors) {
+      console.error(`error: ${err}`);
+    }
+    console.log(
+      `DeepSeek import done · ${result.imported} imported · ${result.skipped} skipped · ${result.errors.length} failed`,
+    );
+    if (result.errors.length > 0) process.exitCode = 1;
+    return;
+  }
+
+  console.error("import is Codex-, Kiro-, or DeepSeek-only. Use op-codex / op-kiro / op-deepseek.");
   process.exitCode = 1;
 }
 
@@ -511,6 +572,7 @@ async function runStatusBoth(): Promise<void> {
     "codex-status",
     "kiro-status",
     "opencode-go-status",
+    "deepseek-status",
   ] as const) {
     const t = all[key];
     if (t) console.log(await t.execute({}, toolCtx()));
@@ -531,6 +593,7 @@ async function runListBoth(
     "codex-list",
     "kiro-list",
     "opencode-go-list",
+    "deepseek-list",
   ] as const) {
     const t = all[key];
     if (!t) continue;
@@ -541,7 +604,7 @@ async function runListBoth(
 }
 
 async function main(): Promise<void> {
-  const argv0 = process.argv[1] ?? "op-ai";
+  const argv0 = process.env.MULTI_AI_ARGV0 ?? process.argv[1] ?? "op-ai";
   const forced = resolveProviderFromArgv0(argv0);
   const { command, flags } = parseArgs(process.argv.slice(2));
   const provider = resolveProvider({ argv0, flags });
@@ -574,7 +637,7 @@ async function main(): Promise<void> {
 
   if (command === "import" && (provider ?? forced) === "xai") {
     console.error(
-      "import is Codex- or Kiro-only. Use op-codex / op-kiro or --provider codex|kiro.",
+      "import is Codex-, Kiro-, or DeepSeek-only. Use op-codex / op-kiro / op-deepseek or --provider codex|kiro|deepseek.",
     );
     process.exitCode = 1;
     return;
@@ -582,8 +645,8 @@ async function main(): Promise<void> {
 
   if (requiresProvider(command, forced) && !provider) {
     console.error(
-      `Command "${command}" requires --provider xai|codex|kiro|opencode-go\n` +
-        `(or use op-xai / op-codex / op-kiro / op-opencode-go alias)\n`,
+      `Command "${command}" requires --provider xai|codex|kiro|opencode-go|deepseek\n` +
+        `(or use op-xai / op-codex / op-kiro / op-opencode-go / op-deepseek alias)\n`,
     );
     console.error(usage(undefined));
     process.exitCode = 1;

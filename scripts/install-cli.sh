@@ -96,6 +96,7 @@ if [[ ! -x "\$BUN" ]]; then
 fi
 # Always run with repo as cwd so relative imports / package resolve work
 cd "\$ROOT"
+export MULTI_AI_ARGV0="\$0"
 exec "\$BUN" "\$CLI" "\$@"
 EOF
   chmod +x "$target"
@@ -105,12 +106,16 @@ EOF
 write_shim "op-ai"
 write_shim "op-xai"
 write_shim "op-codex"
+write_shim "op-kiro"
 write_shim "op-opencode-go"
+write_shim "op-deepseek"
 write_shim "opencode-multi-ai"
 write_shim "opencode-multi-xai"
 write_shim "opencode-multi-codex"
 write_shim "xai-multi"
 write_shim "codex-multi"
+write_shim "kiro-multi"
+write_shim "deepseek-multi"
 
 # Remove legacy one-shot wrappers (xai-list, xai-add, codex-list, …) if present
 LEGACY_CMDS=(

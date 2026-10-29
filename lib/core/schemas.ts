@@ -19,6 +19,7 @@ export const PROVIDER_KINDS = [
   "kiro",
   "antigravity",
   "opencode-go",
+  "deepseek",
 ] as const;
 export const ProviderKindSchema = z.enum(PROVIDER_KINDS);
 export type ProviderKind = z.infer<typeof ProviderKindSchema>;
@@ -38,6 +39,22 @@ export const LastSwitchReasonSchema = z.enum([
   "rotation",
   "quota-exhausted",
   "manual",
+  /**
+   * Credential is dead (OAuth refresh grant `invalid_grant` / revoked token).
+   * Terminal for the credential — the account stays in the pool but is not
+   * selectable and is prunable.
+   */
+  "auth-failure",
+  /**
+   * Permanent entitlement / allowlist gate (plan does not include the model).
+   * The credential is still valid — the account recovers on re-login.
+   */
+  "entitlement-blocked",
+  /**
+   * The upstream provider disabled the account (e.g. Google "violation of
+   * Terms of Service"). Terminal for this account until re-login.
+   */
+  "provider-disabled",
 ]);
 export type LastSwitchReason = z.infer<typeof LastSwitchReasonSchema>;
 
@@ -106,8 +123,9 @@ const AccountBaseFields = {
   rateLimitRemainingRequests: z.number().optional(),
   rateLimitLimitTokens: z.number().optional(),
   rateLimitRemainingTokens: z.number().optional(),
-  /** Epoch ms when rate-limit headers were last observed. */
   rateLimitObservedAt: z.number().optional(),
+  /** Last observed error message or diagnostic detail. */
+  lastError: z.string().optional(),
 } as const;
 
 /**
@@ -377,6 +395,30 @@ export const OpenCodeGoAccountMetadataSchema = z
   })
   .strict();
 
+export const DeepSeekSpecificFields = {
+  /** Account balance (from /user/balance). */
+  balance: z.number().optional(),
+  /** Currency code (CNY, USD). */
+  currency: z.string().optional(),
+  /** Granted promo balance. */
+  grantedBalance: z.number().optional(),
+  /** Topped-up cash balance. */
+  toppedUpBalance: z.number().optional(),
+  /** Whether the account balance is available for inference. */
+  isAvailable: z.boolean().optional(),
+  /** Epoch ms when balance snapshot was last fetched. */
+  usageObservedAt: z.number().optional(),
+} as const;
+
+export const DeepSeekAccountMetadataSchema = z
+  .object({
+    provider: z.literal("deepseek"),
+    ...AccountBaseFields,
+    subscriptionStatus: SubscriptionStatusSchema.default("active"),
+    ...DeepSeekSpecificFields,
+  })
+  .strict();
+
 export const AccountMetadataSchema = z
   .discriminatedUnion("provider", [
     XaiAccountMetadataSchema,
@@ -384,6 +426,7 @@ export const AccountMetadataSchema = z
     KiroAccountMetadataObjectSchema,
     AntigravityAccountMetadataSchema,
     OpenCodeGoAccountMetadataSchema,
+    DeepSeekAccountMetadataSchema,
   ])
   .superRefine((account, ctx) => {
     if (account.provider === "kiro") validateKiroAccount(account, ctx);
@@ -397,6 +440,9 @@ export type AntigravityAccountMetadata = z.infer<
 >;
 export type OpenCodeGoAccountMetadata = z.infer<
   typeof OpenCodeGoAccountMetadataSchema
+>;
+export type DeepSeekAccountMetadata = z.infer<
+  typeof DeepSeekAccountMetadataSchema
 >;
 export type AccountOf<P extends ProviderKind> = Extract<
   AccountMetadata,
@@ -435,6 +481,7 @@ export const AccountStorageSchema = z.object({
       kiro: z.string().optional(),
       antigravity: z.string().optional(),
       opencodeGo: z.string().optional(),
+      deepseek: z.string().optional(),
     })
     .default({}),
 });

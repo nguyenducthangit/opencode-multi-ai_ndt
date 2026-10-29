@@ -71,10 +71,10 @@ describe("createAntigravityFetch", () => {
     });
 
     expect(res.status).toBe(200);
-    // Verified: Daily was called first, then Prod
+    // Verified: Prod was called first, then Daily
     expect(mockedFetch).toHaveBeenCalledTimes(2);
-    expect(mockedFetch.mock.calls[0][0]).toContain("daily-cloudcode-pa.googleapis.com");
-    expect(mockedFetch.mock.calls[1][0]).toContain("cloudcode-pa.googleapis.com");
+    expect(mockedFetch.mock.calls[0][0]).toContain("cloudcode-pa.googleapis.com");
+    expect(mockedFetch.mock.calls[1][0]).toContain("daily-cloudcode-pa.googleapis.com");
 
     // Quota should NOT be exhausted because Prod succeeded
     expect(markQuotaExhausted).not.toHaveBeenCalled();
@@ -162,6 +162,10 @@ describe("createAntigravityFetch", () => {
     });
 
     expect(res.status).toBe(200);
-    expect(markEntitlementBlocked).toHaveBeenCalledWith("antigravity", "acc-1");
+    expect(markEntitlementBlocked).toHaveBeenCalledWith(
+      "antigravity",
+      "acc-1",
+      "entitlement-blocked",
+    );
   });
 });

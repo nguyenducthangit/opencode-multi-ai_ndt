@@ -1,0 +1,230 @@
+--------- beginning of main
+10-29 17:29:03.181   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.max.qp
+10-29 17:29:03.181   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.min.qp
+10-29 17:29:03.181   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.ip.qpdelta
+10-29 17:29:03.184   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.184   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x9838b000, handle:0x1, size: 1769472, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.195   679 21170 I VDO_LOG : [Info][eVideoInvalidateCache]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_INVALID_BY_RANGE
+10-29 17:29:03.195   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1788561459 not supported
+10-29 17:29:03.196   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1 not supported
+10-29 17:29:03.196   679 21170 E VDO_LOG : [tid: 34][WARNING] h264_enc_getParameter 0 not supported
+10-29 17:29:03.283   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.max.qp
+10-29 17:29:03.284   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.min.qp
+10-29 17:29:03.284   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.ip.qpdelta
+10-29 17:29:03.285   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.286   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x9838b000, handle:0x1, size: 1769472, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.296   679 21170 I VDO_LOG : [Info][eVideoInvalidateCache]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_INVALID_BY_RANGE
+10-29 17:29:03.296   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1788561459 not supported
+10-29 17:29:03.297   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1 not supported
+10-29 17:29:03.297   679 21170 E VDO_LOG : [tid: 34][WARNING] h264_enc_getParameter 0 not supported
+10-29 17:29:03.376 30206 10036 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.reportNetworkConnectivity(ConnectivityManager.java:3691)] [cmsa.a(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):15)] [cmus.m(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):6)] [cmtd.a(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):342)] [cmuf.run(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):13)] [cmvd.run(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):6)] [hvgh.run(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):23)] [bqqt.c(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):50)] [bqqt.run(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):65)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1100)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)] [bqwu.run(:com.google.android.gms@264131029@26.41.31 (190400-1002748488):8)] [java.lang.Thread.run(Thread.java:1572)]
+--------- beginning of system
+10-29 17:29:03.377  1263  2997 D SamsungAlarmManager: Cancel Alarm calling from uid:10185 pid :30206 / L:4de5361
+10-29 17:29:03.378  1263  2997 V SamsungAlarmManager: setLocked to kernel - W:2965789484 / NW:2965766953, now=2965765083
+10-29 17:29:03.380  1263  2997 D SamsungAlarmManager: setExact (T:2/F:65/AC:false) 20261029T174503 now=2965765084 - CU:10185/CP:30206/L:4de5361:GCM_HB_ALARM
+10-29 17:29:03.380  1263  2997 V SamsungAlarmManager: setLocked to kernel - W:2965789484 / NW:2965766953, now=2965765085
+10-29 17:29:03.386   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.max.qp
+10-29 17:29:03.387   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.min.qp
+10-29 17:29:03.387   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.ip.qpdelta
+10-29 17:29:03.388   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.388   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x9838b000, handle:0x1, size: 1769472, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.397 30206  9991 I AlarmManager: setExactAndAllowWhileIdle [name: FcmRetry type: 2 triggerAtMillis: 2965885100]
+10-29 17:29:03.398   679 21170 I VDO_LOG : [Info][eVideoInvalidateCache]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_INVALID_BY_RANGE
+10-29 17:29:03.399   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1788561459 not supported
+10-29 17:29:03.399   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1 not supported
+10-29 17:29:03.399   679 21170 E VDO_LOG : [tid: 34][WARNING] h264_enc_getParameter 0 not supported
+10-29 17:29:03.399  1263  3031 D SamsungAlarmManager: Cancel Alarm calling from uid:10185 pid :30206 / OP:PendingIntent{c3df1ef: PendingIntentRecord{6740b66 com.google.android.gms/com.google.android.gms.scheduler broadcastIntent}}
+10-29 17:29:03.399  1263  2997 D CompatibilityChangeReporter: Compat change id reported: 171306433; UID 10185; state: ENABLED
+10-29 17:29:03.400  1263  3031 V SamsungAlarmManager: setLocked to kernel - W:2965789484 / NW:2965766953, now=2965765104
+10-29 17:29:03.401  1263  2997 D SamsungAlarmManager: setExact (T:2/F:33/AC:false) 20261029T173103 now=2965765105 - CU:10185/CP:30206/OP:PendingIntent{3f104fc: PendingIntentRecord{40c1785 com.google.android.gms/com.google.android.gms.gcm broadcastIntent}}
+10-29 17:29:03.401  1263  2997 V SamsungAlarmManager: setLocked to kernel - W:2965789484 / NW:2965766953, now=2965765106
+10-29 17:29:03.403  1263  3031 D SamsungAlarmManager: setInexact (T:3/F:0/AC:false) 20261029T173345 now=2965765107 - CU:10185/CP:30206/OP:PendingIntent{e2eb9da: PendingIntentRecord{6740b66 com.google.android.gms/com.google.android.gms.scheduler broadcastIntent}}
+10-29 17:29:03.403  1263  3031 V SamsungAlarmManager: setLocked to kernel - W:2965789484 / NW:2965766953, now=2965765107
+10-29 17:29:03.406  1263  1321 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 11888; state: DISABLED
+10-29 17:29:03.406  1263  1321 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 11888; state: DISABLED
+10-29 17:29:03.406  1263  1321 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 11888; state: DISABLED
+10-29 17:29:03.406  1263  1321 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 11888; state: ENABLED
+10-29 17:29:03.407  1263  1322 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 11888; state: ENABLED
+10-29 17:29:03.411   459   459 D io_stats: !@ 179,0 r 30037126 600013988 w 7505095 270422320 d 2227533 260241304 f 9267987 10020344 iot 23234120 0 th 102400 102400 95116 pt 1856 inp 0 0 962414.529
+10-29 17:29:03.427   649   649 D Zygote  : Forked child process 10082
+10-29 17:29:03.429  1263  1322 I ActivityManager: Start proc 10082:com.read.goodnovel/u0a1888 for broadcast {com.read.goodnovel/com.google.firebase.iid.FirebaseInstanceIdReceiver}
+10-29 17:29:03.459 10082 10082 I .read.goodnove: Using generational CollectorTypeCC GC.
+10-29 17:29:03.473 10082 10082 E USNET   : USNET: appName: com.read.goodnovel
+10-29 17:29:03.475 10082 10082 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+10-29 17:29:03.477 10082 10082 D ActivityThread: setConscryptValidator
+10-29 17:29:03.477 10082 10082 D ActivityThread: setConscryptValidator - put
+10-29 17:29:03.481  1263  3031 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 11888; state: DISABLED
+10-29 17:29:03.484  1263  3031 I ActivityManager: DSS OFF for com.read.goodnovel
+10-29 17:29:03.488   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.max.qp
+10-29 17:29:03.488   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.min.qp
+10-29 17:29:03.488   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.ip.qpdelta
+10-29 17:29:03.489  1263  3031 D ActivityManager: attachApplicationLocked() app=ProcessRecord{f21be0b 10082:com.read.goodnovel/u0a1888} app.isolatedEntryPoint=null instr2=null
+10-29 17:29:03.490   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.490   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x9838b000, handle:0x1, size: 1769472, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.495  1657  1657 D HidDeviceService: handleMessage(): msg.what=8
+10-29 17:29:03.496 10082 10082 D ActivityThread: handleBindApplication()++ app=com.read.goodnovel
+10-29 17:29:03.497   707 21442 V APM_AudioPolicyManager: setAppState(portId:1537, state:2)
+10-29 17:29:03.497 10082 10082 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 11888; state: ENABLED
+10-29 17:29:03.500   679 21170 I VDO_LOG : [Info][eVideoInvalidateCache]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_INVALID_BY_RANGE
+10-29 17:29:03.500   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1788561459 not supported
+10-29 17:29:03.501   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1 not supported
+10-29 17:29:03.501   679 21170 E VDO_LOG : [tid: 34][WARNING] h264_enc_getParameter 0 not supported
+10-29 17:29:03.534 10082 10082 D nativeloader: Configuring clns-4 for other apk /apex/com.android.extservices/javalib/android.ext.adservices.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/lib/arm64:/data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.read.goodnovel
+10-29 17:29:03.534 10082 10082 D nativeloader: Extending system_exposed_libraries: libSEF.quram.so:libimagecodec.quram.so:libagifencoder.quram.so:libteecl.teegris.samsung.so:libteeservice_client.trustonic.so:libsce_v1.crypto.samsung.so:libknox_remotedesktopclient.knox.samsung.so:lib_vnd_client.dk.samsung.so:lib_native_client.dk.samsung.so:lib_nativeJni.dk.samsung.so:lib.engmodejni.samsung.so:libneural.snap.samsung.so:libsnap_hidl.snap.samsung.so:libface_landmark.arcsoft.so:libhigh_dynamic_range.arcsoft.so:libss_jni.securestorage.samsung.so:libSecEmbms.telephony.samsung.so:libSFEffect.fonteffect.samsung.so:libBeauty_v4.camera.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libImageScreener.camera.samsung.so:libFacePreProcessing.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libFace_Landmark_API.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libObjectAndSceneClassification_2.5_OD.camera.samsung.so:libQREngine_common.camera.samsung.so:libEventDetector
+10-29 17:29:03.538 10082 10082 D nativeloader: InitApexLibraries:
+10-29 17:29:03.538 10082 10082 D nativeloader:   com_android_appsearch: libicing.so
+10-29 17:29:03.538 10082 10082 D nativeloader:   com_android_art: libartservice.so
+10-29 17:29:03.538 10082 10082 D nativeloader:   com_android_conscrypt: libjavacrypto.so
+10-29 17:29:03.538 10082 10082 D nativeloader:   com_android_extservices: libtflite_support_classifiers_native.so
+10-29 17:29:03.538 10082 10082 D nativeloader:   com_android_mediaprovider: libpdfclient.so
+10-29 17:29:03.538 10082 10082 D nativeloader:   com_android_os_statsd: libstats_jni.so
+10-29 17:29:03.538 10082 10082 D nativeloader:   com_android_tethering: libandroid_net_connectivity_com_android_net_module_util_jni.so:libandroid_net_connectivity_com_android_net_module_util_jni_CommonConnectivityJni.so:libcrypto_httpengine.so:libframework-connectivity-jni.so:libframework-connectivity-tiramisu-jni.so:libhttpengine.so:libservice-connectivity.so:libservice-thread-jni.so
+10-29 17:29:03.589   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.max.qp
+10-29 17:29:03.590   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.min.qp
+10-29 17:29:03.590   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.ip.qpdelta
+10-29 17:29:03.591   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.591   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x9838b000, handle:0x1, size: 1769472, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.601   679 21170 I VDO_LOG : [Info][eVideoInvalidateCache]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_INVALID_BY_RANGE
+10-29 17:29:03.601   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1788561459 not supported
+10-29 17:29:03.602   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1 not supported
+10-29 17:29:03.602   679 21170 E VDO_LOG : [tid: 34][WARNING] h264_enc_getParameter 0 not supported
+10-29 17:29:03.691   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.max.qp
+10-29 17:29:03.691   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.min.qp
+10-29 17:29:03.691   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.ip.qpdelta
+10-29 17:29:03.693   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.693   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x9838b000, handle:0x1, size: 1769472, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.700  1560  1560 I WifiHAL : Get link layer stats
+10-29 17:29:03.700  1560  1560 I WifiHAL : GetLinkStatsCommand::create
+10-29 17:29:03.700  1560  1560 D android.hardware.wifi@1.0-service-lazy: WifiRequest::create vendor command to iface 39, vendor_id=0x1a11, subcmd=0x1200, res=0
+10-29 17:29:03.701  1560  1560 I android.hardware.wifi@1.0-service-lazy: WifiCommand::requestResponse err=-95
+10-29 17:29:03.701  1560  1560 I WifiHAL : wifi_get_link_stats: result=-3
+10-29 17:29:03.701  1263  1488 E WifiVendorHal: $r8$lambda$s6w0pmKyq6-tDdqCEDbOV_xqgVE(l.1191) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-29 17:29:03.703   679 21170 I VDO_LOG : [Info][eVideoInvalidateCache]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_INVALID_BY_RANGE
+10-29 17:29:03.704   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1788561459 not supported
+10-29 17:29:03.704   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1 not supported
+10-29 17:29:03.704   679 21170 E VDO_LOG : [tid: 34][WARNING] h264_enc_getParameter 0 not supported
+10-29 17:29:03.794   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.max.qp
+10-29 17:29:03.794   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.min.qp
+10-29 17:29:03.794   679 21171 D VCodec  : [Config] Config Lookup Not Found: mtk.venc.ip.qpdelta
+10-29 17:29:03.795   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.796   679 21170 V VDO_LOG : [Info][eVideoFlushCacheForIon]cmd:ION_SYS_CACHE_SYNC, va:0x9838b000, handle:0x1, size: 1769472, type:ION_CACHE_FLUSH_BY_RANGE
+10-29 17:29:03.806   679 21170 I VDO_LOG : [Info][eVideoInvalidateCache]cmd:ION_SYS_CACHE_SYNC, va:0x97f8b000, handle:0x2, size: 4194304, type:ION_CACHE_INVALID_BY_RANGE
+10-29 17:29:03.806   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1788561459 not supported
+10-29 17:29:03.806   679 21170 E VDO_LOG : [tid: 30][WARNING] h264_enc_getParameter 1 not supported
+10-29 17:29:03.806   679 21170 E VDO_LOG : [tid: 34][WARNING] h264_enc_getParameter 0 not supported
+10-29 17:29:03.871   664 21192 D r_submix: read_frames 1345884160, T_rec 28039.253906s, p_vs_o    5058us
+10-29 17:29:03.951   664 21192 D r_submix:   in_read unread data (1024)/(1024)
+10-29 17:29:03.980 10082 10082 D nativeloader: Configuring clns-5 for other apk /data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/lib/arm64:/data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.read.goodnovel
+10-29 17:29:04.028 10082 10082 V GraphicsEnvironment: ANGLE Developer option for 'com.read.goodnovel' set to: 'default'
+10-29 17:29:04.028 10082 10082 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+10-29 17:29:04.032 10082 10082 D LoadedApk: LoadedApk::makeApplication() appContext.mOpPackageName=com.read.goodnovel appContext.mBasePackageName=com.read.goodnovel
+10-29 17:29:04.033 10082 10082 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+10-29 17:29:04.042 10082 10082 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+10-29 17:29:04.045 10082 10082 I MultiDex: VM with version 2.1.0 has multidex support
+10-29 17:29:04.045 10082 10082 I MultiDex: Installing application
+10-29 17:29:04.045 10082 10082 I MultiDex: VM has multidex support, MultiDex support library is disabled.
+10-29 17:29:04.054 10082 10096 D AdvertisingIdClient: Creating AdvertisingIdClient
+10-29 17:29:04.054 10082 10096 D AdvertisingIdClient: AdvertisingIdClient already created.
+10-29 17:29:04.065 10082 10096 D AdvertisingIdClient: AdvertisingIdClient is not bounded. Starting to bind it...
+10-29 17:29:04.084 10082 10082 D SessionsDependencies: Dependency to CRASHLYTICS added.
+10-29 17:29:04.086 10082 10082 I FirebaseApp: Device unlocked: initializing all Firebase APIs for app [DEFAULT]
+10-29 17:29:04.089 10082 10082 I FirebaseCrashlytics: Initializing Firebase Crashlytics 19.4.3 for com.read.goodnovel
+10-29 17:29:04.105 17909 17909 I adbd    : adbd service requested 'shell,v2,TERM=xterm-256color,raw:getprop'
+10-29 17:29:04.107 30206 30206 D BoundBrokerSvc: onRebind: Intent { act=com.google.android.gms.common.telemetry.service.START dat=chimera-action: cmp=com.google.android.gms/.chimera.PersistentApiService }
+10-29 17:29:04.116 10082 10082 D SessionsDependencies: Subscriber CRASHLYTICS registered.
+10-29 17:29:04.124 10082 10104 W .read.goodnove: ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*1277586450]{PCL[/system/framework/org.apache.http.legacy.jar*128607899]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]#PCL[/system/framework/com.android.location.provider.jar*3633238672]#PCL[/system/framework/com.android.media.remotedisplay.jar*3472798123]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]} | DLC[];PCL[])
+10-29 17:29:04.131 10082 10104 I DynamiteModule: Considering local module com.google.android.gms.measurement.dynamite:141 and remote module com.google.android.gms.measurement.dynamite:216
+10-29 17:29:04.131 10082 10104 I DynamiteModule: Selected remote version of com.google.android.gms.measurement.dynamite, version >= 216
+10-29 17:29:04.131 10082 10104 V DynamiteModule: Dynamite loader version >= 2, using loadModule2NoCrashUtils
+10-29 17:29:04.147 10082 10104 W System  : ClassLoader referenced unknown path: 
+10-29 17:29:04.148 10082 10104 D nativeloader: Configuring clns-6 for other apk . target_sdk_version=37, uses_libraries=, library_path=/data/app/~~vVjHN4uo_1NxqEa7dp3vyw==/com.google.android.gms-D7XCLUDkSlMP4F2-UJXebQ==/lib/arm64:/data/app/~~vVjHN4uo_1NxqEa7dp3vyw==/com.google.android.gms-D7XCLUDkSlMP4F2-UJXebQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+10-29 17:29:04.156  1263  3031 I GenerationRegistry: mBackingStore.isClosed() : false
+10-29 17:29:04.173 10082 10082 D FirebaseSessions: Initializing Firebase Sessions SDK.
+10-29 17:29:04.175 10082 10082 I FirebaseInitProvider: FirebaseApp initialization successful
+10-29 17:29:04.180 10082 10082 D WM-WrkMgrInitializer: Initializing WorkManager with default configuration.
+10-29 17:29:04.188  1263  2998 D PackageManager: setEnabledSetting : userId = 0 packageName = com.read.goodnovel cmp = androidx.work.impl.background.systemjob.SystemJobService newState = 1 callingPackage = 11888/com.read.goodnovel
+10-29 17:29:04.191 10082 10104 W .read.goodnove: ClassLoaderContext classpath element checksum mismatch. expected=1277586450, found=2302745933 (DLC[];PCL[base.apk*1277586450]{PCL[/system/framework/org.apache.http.legacy.jar*128607899]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]#PCL[/system/framework/com.android.location.provider.jar*3633238672]#PCL[/system/framework/com.android.media.remotedisplay.jar*3472798123]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]} | DLC[];PCL[/data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/base.apk*2302745933]{PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]})
+10-29 17:29:04.210 10082 10134 I DynamiteModule: Considering local module com.google.android.gms.cronet_dynamite:0 and remote module com.google.android.gms.cronet_dynamite:4911
+10-29 17:29:04.210 10082 10134 I DynamiteModule: Selected remote version of com.google.android.gms.cronet_dynamite, version >= 4911
+10-29 17:29:04.210 10082 10134 V DynamiteModule: Dynamite loader version >= 2, using loadModule2NoCrashUtils
+10-29 17:29:04.214 10082 10116 D LifecycleServiceBinder: Binding service to application.
+10-29 17:29:04.228 10082 10082 W com.facebook.UserSettingsManager: You haven't set a value for AdvertiserIDCollectionEnabled. Set the flag to TRUE if you want to collect Advertiser ID for better advertising and analytics results. To request user consent before collecting data, set the flag value to FALSE, then change to TRUE once user consent is received. Learn more: https://developers.facebook.com/docs/app-events/getting-started-app-events-android#disable-auto-events.
+10-29 17:29:04.253 10082 10131 D CompatibilityChangeReporter: Compat change id reported: 160794467; UID 11888; state: ENABLED
+10-29 17:29:04.261 10082 10134 W .read.goodnove: ClassLoaderContext classpath element checksum mismatch. expected=1277586450, found=2302745933 (DLC[];PCL[base.apk*1277586450]{PCL[/system/framework/org.apache.http.legacy.jar*128607899]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]#PCL[/system/framework/com.android.location.provider.jar*3633238672]#PCL[/system/framework/com.android.media.remotedisplay.jar*3472798123]#PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]} | DLC[];PCL[/data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/base.apk*2302745933]{PCL[/apex/com.android.extservices/javalib/android.ext.adservices.jar*4107572224]})
+10-29 17:29:04.274  1263  2997 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10222; state: DISABLED
+10-29 17:29:04.274  1263  2997 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10222; state: DISABLED
+10-29 17:29:04.274  1263  2997 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10222; state: DISABLED
+10-29 17:29:04.274  1263  2997 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10222; state: ENABLED
+10-29 17:29:04.275  1263  1322 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10222; state: ENABLED
+10-29 17:29:04.279 10082 10082 D ActivityThread: handleBindApplication() --
+10-29 17:29:04.288 10082 10082 D SourceFile: onCreate:  (SourceFile:89)  MED>>>> resetOriginalChannelCode start
+10-29 17:29:04.292   649   649 D Zygote  : Forked child process 10167
+10-29 17:29:04.294  1263  1322 I ActivityManager: Start proc 10167:com.facebook.katana/u0a222 for content provider {com.facebook.katana/com.facebook.platform.common.provider.PlatformProviderBase}
+10-29 17:29:04.317  1263  1582 D NetdEventListenerService: DNS Requested by : 1467, 11888, 0
+10-29 17:29:04.318  1263  1582 D NetdEventListenerService: DNS Requested by : 1467, 11888, 0
+10-29 17:29:04.320  1263  1582 D NetdEventListenerService: DNS Requested by : 1467, 11888, 0
+10-29 17:29:04.320 10167 10167 I facebook.katan: Using generational CollectorTypeCC GC.
+10-29 17:29:04.328 10167 10167 E USNET   : USNET: appName: com.facebook.katana
+10-29 17:29:04.329 10167 10167 D ProcessState: Binder ioctl to enable oneway spam detection failed: Invalid argument
+10-29 17:29:04.331 10167 10167 D ActivityThread: setConscryptValidator
+10-29 17:29:04.331 10167 10167 D ActivityThread: setConscryptValidator - put
+10-29 17:29:04.334 30206 26320 I PhenotypeResourceReader: unable to find any Phenotype resource metadata for com.read.goodnovel
+10-29 17:29:04.334  1263  2997 D CompatibilityChangeReporter: Compat change id reported: 168419799; UID 10222; state: DISABLED
+10-29 17:29:04.335  1263  2997 I ActivityManager: DSS OFF for com.facebook.katana
+10-29 17:29:04.340  1263  2997 D ActivityManager: attachApplicationLocked() app=ProcessRecord{162131d 10167:com.facebook.katana/u0a222} app.isolatedEntryPoint=null instr2=null
+10-29 17:29:04.341 10082 10082 D SourceFile: onCreate:  (SourceFile:188)  MED>>>> resetOriginalChannelCode end
+10-29 17:29:04.344  1657  1657 D HidDeviceService: handleMessage(): msg.what=8
+10-29 17:29:04.348 10167 10167 D ActivityThread: handleBindApplication()++ app=com.facebook.katana
+10-29 17:29:04.348   707 21442 V APM_AudioPolicyManager: setAppState(portId:1537, state:2)
+10-29 17:29:04.349 10167 10167 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10222; state: ENABLED
+10-29 17:29:04.359 10082 10140 W FeatureFlagsImplExport: java.lang.NoClassDefFoundError: Class not found using the boot class loader; no stack trace available
+10-29 17:29:04.360 10082 10147 W FeatureFlagsImplExport: java.lang.NoClassDefFoundError: Class not found using the boot class loader; no stack trace available
+10-29 17:29:04.388 10167 10167 D nativeloader: Configuring clns-4 for other apk /system/framework/org.apache.http.legacy.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/lib/arm64:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/base.apk!/lib/arm64-v8a:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/split_i18n_en_GB.apk!/lib/arm64-v8a:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/split_i18n_es_ES.apk!/lib/arm64-v8a:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/split_i18n_vi_VN.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.facebook.katana
+10-29 17:29:04.388 10167 10167 D nativeloader: Extending system_exposed_libraries: libSEF.quram.so:libimagecodec.quram.so:libagifencoder.quram.so:libteecl.teegris.samsung.so:libteeservice_client.trustonic.so:libsce_v1.crypto.samsung.so:libknox_remotedesktopclient.knox.samsung.so:lib_vnd_client.dk.samsung.so:lib_native_client.dk.samsung.so:lib_nativeJni.dk.samsung.so:lib.engmodejni.samsung.so:libneural.snap.samsung.so:libsnap_hidl.snap.samsung.so:libface_landmark.arcsoft.so:libhigh_dynamic_range.arcsoft.so:libss_jni.securestorage.samsung.so:libSecEmbms.telephony.samsung.so:libSFEffect.fonteffect.samsung.so:libBeauty_v4.camera.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libImageScreener.camera.samsung.so:libFacePreProcessing.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libFace_Landmark_API.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libObjectAndSceneClassification_2.5_OD.camera.samsung.so:libQREngine_common.camera.samsung.so:libEventDetector
+10-29 17:29:04.401 10082 10082 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5469)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5436)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5410)] [bd.u.c(SourceFile:30)] [bd.d.onStart(SourceFile:36)] [zn.b.m(SourceFile:1)] [gc.n.<init>(SourceFile:124)] [gc.a.l(SourceFile:3)] [bd.o.c(SourceFile:89)] [com.bumptech.glide.Glide.with(SourceFile:1)] [kv.b0.c(SourceFile:9)] [com.read.goodnovel.AppContext.onCreate(SourceFile:897)] [android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1211)] [android.app.ActivityThread.handleBindApplication(ActivityThread.java:7506)] [android.app.ActivityThread.access$1600(ActivityThread.java:310)] [android.app.ActivityThread$H.handleMessage(ActivityThread.java:2281)]
+10-29 17:29:04.405  1263  2998 D ConnectivityService: requestNetwork for uid/pid:11888/10082 activeRequest: null callbackRequest: 70008 [NetworkRequest [ REQUEST id=70009, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 11888 RequestorUid: 11888 RequestorPkg: com.read.goodnovel UnderlyingNetworks: Null] ]] callback flags: 0 order: 2147483647 isUidTracked: false declaredMethods: AVAIL|LOST|NC
+10-29 17:29:04.406  1263  1498 D ConnectivityService:    accepting network in place of null for NetworkRequest [ REQUEST id=70009, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 11888 RequestorUid: 11888 RequestorPkg: com.read.goodnovel UnderlyingNetworks: Null] ]
+10-29 17:29:04.410 10167 10167 D nativeloader: Configuring clns-5 for other apk /apex/com.android.extservices/javalib/android.ext.adservices.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/lib/arm64:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/base.apk!/lib/arm64-v8a:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/split_i18n_en_GB.apk!/lib/arm64-v8a:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/split_i18n_es_ES.apk!/lib/arm64-v8a:/data/app/~~5zdF5cyYPFPOyjOSVbYbDg==/com.facebook.katana-gr1GUKRLOW5lKHsbqEOHTQ==/split_i18n_vi_VN.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.facebook.katana
+10-29 17:29:04.410 10167 10167 D nativeloader: Extending system_exposed_libraries: libSEF.quram.so:libimagecodec.quram.so:libagifencoder.quram.so:libteecl.teegris.samsung.so:libteeservice_client.trustonic.so:libsce_v1.crypto.samsung.so:libknox_remotedesktopclient.knox.samsung.so:lib_vnd_client.dk.samsung.so:lib_native_client.dk.samsung.so:lib_nativeJni.dk.samsung.so:lib.engmodejni.samsung.so:libneural.snap.samsung.so:libsnap_hidl.snap.samsung.so:libface_landmark.arcsoft.so:libhigh_dynamic_range.arcsoft.so:libss_jni.securestorage.samsung.so:libSecEmbms.telephony.samsung.so:libSFEffect.fonteffect.samsung.so:libBeauty_v4.camera.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libImageScreener.camera.samsung.so:libFacePreProcessing.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libFace_Landmark_API.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libObjectAndSceneClassification_2.5_OD.camera.samsung.so:libQREngine_common.camera.samsung.so:libEventDetector
+10-29 17:29:04.413  1263  1488 D WifiNetworkFactory: got request NetworkRequest [ REQUEST id=70009, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 11888 RequestorUid: 11888 RequestorPkg: com.read.goodnovel UnderlyingNetworks: Null] ]
+10-29 17:29:04.413 10167 10167 D nativeloader: InitApexLibraries:
+10-29 17:29:04.413 10167 10167 D nativeloader:   com_android_appsearch: libicing.so
+10-29 17:29:04.413 10167 10167 D nativeloader:   com_android_art: libartservice.so
+10-29 17:29:04.413 10167 10167 D nativeloader:   com_android_conscrypt: libjavacrypto.so
+10-29 17:29:04.413 10167 10167 D nativeloader:   com_android_extservices: libtflite_support_classifiers_native.so
+10-29 17:29:04.413 10167 10167 D nativeloader:   com_android_mediaprovider: libpdfclient.so
+10-29 17:29:04.413 10167 10167 D nativeloader:   com_android_os_statsd: libstats_jni.so
+10-29 17:29:04.413 10167 10167 D nativeloader:   com_android_tethering: libandroid_net_connectivity_com_android_net_module_util_jni.so:libandroid_net_connectivity_com_android_net_module_util_jni_CommonConnectivityJni.so:libcrypto_httpengine.so:libframework-connectivity-jni.so:libframework-connectivity-tiramisu-jni.so:libhttpengine.so:libservice-connectivity.so:libservice-thread-jni.so
+10-29 17:29:04.413  1263  1488 D UntrustedWifiNetworkFactory: got request NetworkRequest [ REQUEST id=70009, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 11888 RequestorUid: 11888 RequestorPkg: com.read.goodnovel UnderlyingNetworks: Null] ]
+10-29 17:29:04.413  1263  1488 D OemPaidWifiNetworkFactory: got request NetworkRequest [ REQUEST id=70009, [ Capabilities: INTERNET&NOT_RESTRICTED&TRUSTED&NOT_VCN_MANAGED Uid: 11888 RequestorUid: 11888 RequestorPkg: com.read.goodnovel UnderlyingNetworks: Null] ]
+10-29 17:29:04.413  1263  1498 D ConnectivityService: Rematched networks [computed 1ms] [applied 2ms] [issued 5]
+10-29 17:29:04.414  1263  1498 D ConnectivityService: NetworkReassignment :
+10-29 17:29:04.414  1263  1498 D ConnectivityService:   70009 : null → 1467
+10-29 17:29:04.429  1263  1582 D NetdEventListenerService: DNS Requested by : 1467, 11888, 0
+10-29 17:29:04.437 10082 10132 D FBAudienceNetwork: SDK dex loading time: 237
+10-29 17:29:04.502  1263  1582 D NetdEventListenerService: DNS Requested by : 1467, 11888, 0
+10-29 17:29:04.612 29894 29894 I wpa_supplicant: Heartbeat 71307
+10-29 17:29:04.655 10082 10208 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4912)] [android.net.ConnectivityManager.registerNetworkCallback(ConnectivityManager.java:5329)] [android.net.ConnectivityManager.registerNetworkCallback(ConnectivityManager.java:5299)] [com.sensorsdata.analytics.android.sdk.util.NetworkUtils.registerNetworkListener(SourceFile:43)] [com.sensorsdata.analytics.android.sdk.AbstractSensorsDataAPI$3.run(SourceFile:3)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1100)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)] [java.lang.Thread.run(Thread.java:1572)]
+10-29 17:29:04.661  1263  3031 I GenerationRegistry: mBackingStore.isClosed() : false
+10-29 17:29:04.665  1263  2998 D CompatibilityChangeReporter: Compat change id reported: 319212206; UID 11888; state: ENABLED
+10-29 17:29:04.671  1263  1498 D ConnectivityService: Rematched networks [computed 0ms] [applied 1ms] [issued 4]
+10-29 17:29:04.671  1263  1498 D ConnectivityService: NetworkReassignment : no changes
+10-29 17:29:04.694 10082 10140 E com.facebook.GraphResponse: {HttpStatus: 400, errorCode: 190, subErrorCode: -1, errorType: OAuthException, errorMessage: Error validating application. Application has been deleted.}
+10-29 17:29:04.696 10082 10147 E com.facebook.GraphResponse: {HttpStatus: 400, errorCode: 190, subErrorCode: -1, errorType: OAuthException, errorMessage: Error validating application. Application has been deleted.}
+10-29 17:29:04.710 10082 10220 D FirebasePerformance: Transport is not initialized yet, network request trace: https://graph.facebook.com/v16.0/app (responseCode: 400, responseTime: 394.731ms) will be queued for to be dispatched later
+10-29 17:29:04.710 10082 10220 D FirebasePerformance: Transport is not initialized yet, network request trace: https://graph.facebook.com/v16.0/app (responseCode: 400, responseTime: 424.153ms) will be queued for to be dispatched later
+10-29 17:29:04.715 10082 10168 E .read.goodnove: No package ID 6b found for ID 0x6b0b0013.
+10-29 17:29:04.724 10082 10168 I FA      : App measurement initialized, version: 192007
+10-29 17:29:04.725 10082 10168 I FA      : To enable debug logging run: adb shell setprop log.tag.FA VERBOSE
+10-29 17:29:04.725 10082 10082 D ConnectivityManager: StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4912)] [android.net.ConnectivityManager.registerNetworkCallback(ConnectivityManager.java:5329)] [android.net.ConnectivityManager.registerNetworkCallback(ConnectivityManager.java:5299)] [com.appsflyer.internal.AFi1lSDK.<init>(SourceFile:31)] [com.appsflyer.internal.AFb1rSDK.init(SourceFile:135)] [com.read.goodnovel.AppContext.onCreate(SourceFile:1373)] [android.app.Instrumentation.callApplicationOnCreate(Instrumentation.java:1211)] [android.app.ActivityThread.handleBindApplication(ActivityThread.java:7506)] [android.app.ActivityThread.access$1600(ActivityThread.java:310)] [android.app.ActivityThread$H.handleMessage(ActivityThread.java:2281)]
+10-29 17:29:04.725 10082 10168 I FA      : To enable faster debug mode event logging run:
+10-29 17:29:04.725 10082 10168 I FA      :   adb shell setprop debug.firebase.analytics.app com.read.goodnovel
+10-29 17:29:04.733 10082 10146 E com.facebook.GraphResponse: {HttpStatus: 400, errorCode: 190, subErrorCode: -1, errorType: OAuthException, errorMessage: Error validating application. Application has been deleted.}
+10-29 17:29:04.734 10082 10220 D FirebasePerformance: Transport is not initialized yet, network request trace: https://graph.facebook.com/v16.0/app/mobile_sdk_gk (responseCode: 400, responseTime: 462.865ms) will be queued for to be dispatched later
+10-29 17:29:04.737  1263  1498 D ConnectivityService: Rematched networks [computed 1ms] [applied 1ms] [issued 6]
+10-29 17:29:04.737  1263  1498 D ConnectivityService: NetworkReassignment : no changes
+10-29 17:29:04.739 10082 10228 D AdvertisingIdClient: AdvertisingIdClient already created.
+10-29 17:29:04.749  1263  1359 E VerityUtils: Failed to measure fs-verity, errno 1: /data/app/~~gjAENvuhnIcNBqsfTvDd3g==/com.read.goodnovel-oTpsi6olaEA-1KlwnA6y3w==/base.apk
+10-29 17:29:04.752 10082 10119 I FirebaseCrashlytics: Saved version control info
+10-29 17:29:04.761 17909 17909 I adbd    : adbd service requested 'shell,v2,TERM=xterm-256color:export ANDROID_LOG_TAGS=''; exec logcat '-d' '-v' 'threadtime''
+10-29 17:29:04.783  1263  1582 D NetdEventListenerService: DNS Requested by : 1467, 11888, 0

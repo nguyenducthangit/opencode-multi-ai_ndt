@@ -55,6 +55,10 @@ function normalizeStrategy(
   return null;
 }
 
+function providerSettingsKey(provider: ProviderKind): string {
+  return provider === "opencode-go" ? "opencodeGo" : provider;
+}
+
 function readSettingsStrategy(provider?: ProviderKind): AccountSelectionStrategy | null {
   try {
     const p = defaultSettingsPath();
@@ -63,15 +67,17 @@ function readSettingsStrategy(provider?: ProviderKind): AccountSelectionStrategy
       string,
       unknown
     >;
-    if (provider === "antigravity") {
-      const agRaw =
-        (typeof data.antigravitySelectionStrategy === "string"
-          ? data.antigravitySelectionStrategy
-          : undefined) ??
-        (typeof data.antigravityAccountSelectionStrategy === "string"
-          ? data.antigravityAccountSelectionStrategy
-          : undefined);
-      const normalized = normalizeStrategy(agRaw);
+    if (provider) {
+      const key = providerSettingsKey(provider);
+      const val1 = data[`${key}SelectionStrategy`];
+      const val2 = data[`${key}AccountSelectionStrategy`];
+      const provRaw =
+        typeof val1 === "string"
+          ? val1
+          : typeof val2 === "string"
+            ? val2
+            : undefined;
+      const normalized = normalizeStrategy(provRaw);
       if (normalized) return normalized;
     }
     const raw =
@@ -103,8 +109,9 @@ function writeSettingsStrategy(strategy: AccountSelectionStrategy, provider?: Pr
     } catch {
       prev = {};
     }
-    const next = provider === "antigravity"
-      ? { ...prev, antigravitySelectionStrategy: strategy }
+    const key = provider ? providerSettingsKey(provider) : undefined;
+    const next = key
+      ? { ...prev, [`${key}SelectionStrategy`]: strategy }
       : { ...prev, selectionStrategy: strategy };
     const tmp = `${p}.tmp.${process.pid}.${Date.now()}`;
     fs.writeFileSync(tmp, `${JSON.stringify(next, null, 2)}\n`, {
@@ -125,17 +132,18 @@ function writeSettingsStrategy(strategy: AccountSelectionStrategy, provider?: Pr
 /** Current strategy (env > settings > sticky). Cached briefly. */
 export function getSelectionStrategy(provider?: ProviderKind): AccountSelectionStrategy {
   const now = Date.now();
-  if (provider === "antigravity") {
-    const entry = cachedByProvider.antigravity;
+  if (provider) {
+    const entry = cachedByProvider[provider];
     if (entry && now - entry.at < CACHE_MS) return entry.strategy;
 
+    const envKey = `MULTI_AI_${provider.toUpperCase().replace(/-/g, "_")}_SELECTION_STRATEGY`;
     const fromEnv = normalizeStrategy(
-      process.env.MULTI_AI_ANTIGRAVITY_SELECTION_STRATEGY ??
+      process.env[envKey] ??
         process.env.MULTI_AI_SELECTION_STRATEGY ??
         process.env.MULTI_AI_ACCOUNT_SELECTION,
     );
-    const strategy = fromEnv ?? readSettingsStrategy("antigravity") ?? "sticky";
-    cachedByProvider.antigravity = { strategy, at: now };
+    const strategy = fromEnv ?? readSettingsStrategy(provider) ?? "sticky";
+    cachedByProvider[provider] = { strategy, at: now };
     return strategy;
   }
 
@@ -157,9 +165,9 @@ export function setSelectionStrategy(
   provider?: ProviderKind,
 ): void {
   const now = Date.now();
-  if (provider === "antigravity") {
-    cachedByProvider.antigravity = { strategy, at: now };
-    if (persist) writeSettingsStrategy(strategy, "antigravity");
+  if (provider) {
+    cachedByProvider[provider] = { strategy, at: now };
+    if (persist) writeSettingsStrategy(strategy, provider);
     return;
   }
   cachedGlobal = strategy;
@@ -202,5 +210,7 @@ export function selectionStrategyLabel(
 export function resetSelectionStrategyForTests(): void {
   cachedGlobal = undefined;
   cachedGlobalAt = 0;
-  delete cachedByProvider.antigravity;
+  for (const k of Object.keys(cachedByProvider)) {
+    delete cachedByProvider[k as ProviderKind];
+  }
 }

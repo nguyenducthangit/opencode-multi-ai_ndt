@@ -122,10 +122,18 @@ export function resolveInternalModel(
     };
   }
 
-  // 4. Gemini Pro flagship models
+  // 4. Gemini Pro Agent / Agentic models
+  if (raw === "gemini-pro-agent" || raw.includes("pro-agent")) {
+    return {
+      internalModel: "gemini-3.8-flash-tiered",
+      thinkingBudget: customBudget !== undefined ? customBudget : 8192,
+    };
+  }
+
+  // 5. Gemini Pro flagship models (gemini-2.5-pro, gemini-3.1-pro)
   if (raw.includes("pro") || raw.includes("3.1")) {
     return {
-      internalModel: "gemini-3.1-pro-low",
+      internalModel: "gemini-2.5-pro",
       thinkingBudget: customBudget !== undefined ? customBudget : 2048,
     };
   }
@@ -141,43 +149,53 @@ export function resolveInternalModel(
     return { internalModel: "gemini-3-flash", thinkingBudget: 0 };
   }
 
-  // 6. Gemini 3.8 Flash High (Deep Reasoning)
+  // 6. Gemini 2.5 Flash
   if (
+    raw === "gemini-2.5-flash" ||
+    (raw.includes("2.5") && raw.includes("flash") && !raw.includes("thinking"))
+  ) {
+    return { internalModel: "gemini-2.5-flash", thinkingBudget: 0 };
+  }
+
+  // 7. Gemini 3.8 Flash High (Deep Reasoning)
+  if (
+    raw === "gemini-3.8-flash-tiered" ||
     raw === "gemini-3.8-flash-high" ||
     (raw.includes("3.8") && !raw.includes("low")) ||
     (raw.includes("flash") && raw.includes("high")) ||
     raw.includes("agent")
   ) {
+    const defaultBudget = isToolFollowUp ? 2048 : 8192;
     return {
-      internalModel: "gemini-3.6-flash-high",
-      thinkingBudget: customBudget !== undefined ? customBudget : 8192,
+      internalModel: "gemini-3.8-flash-tiered",
+      thinkingBudget: customBudget !== undefined ? customBudget : defaultBudget,
     };
   }
 
-  // 7. Gemini 3.7 Flash Medium (Balanced)
+  // 8. Gemini 3.7 Flash Medium (Balanced)
   if (raw.includes("3.7") || (raw.includes("flash") && raw.includes("medium"))) {
     return {
-      internalModel: "gemini-3.6-flash-low",
+      internalModel: "gemini-3.8-flash-tiered",
       thinkingBudget: customBudget !== undefined ? customBudget : 4096,
     };
   }
 
-  // 8. Gemini 3.6 Flash (Fast / Light Reasoning)
+  // 9. Gemini 3.6 Flash (Fast / Light Reasoning)
   if (raw.includes("3.6") || (raw.includes("flash") && raw.includes("low"))) {
     return {
-      internalModel: "gemini-3.6-flash-low",
+      internalModel: "gemini-3.8-flash-tiered",
       thinkingBudget: customBudget !== undefined ? customBudget : 2048,
     };
   }
 
-  // 9. Generic Flash fallback
+  // 10. Generic Flash fallback
   if (raw.includes("flash")) {
     return { internalModel: "gemini-3-flash", thinkingBudget: 0 };
   }
 
   // Default fallback for unknown model: default to deep reasoning Gemini
   return {
-    internalModel: "gemini-3.6-flash-high",
+    internalModel: "gemini-3.8-flash-tiered",
     thinkingBudget: customBudget !== undefined ? customBudget : 2048,
   };
 }
@@ -407,7 +425,10 @@ export function transformOpenAiToGemini(
   }
   if (thinkingBudget !== undefined) {
     if (thinkingBudget === 0) {
-      generationConfig.thinkingConfig = { thinkingBudget: 0 };
+      // Upstream models gemini-3-flash and gemini-2.5-flash reject thinkingConfig with 400 INVALID_ARGUMENT
+      if (mappedModelName !== "gemini-3-flash" && mappedModelName !== "gemini-2.5-flash") {
+        generationConfig.thinkingConfig = { thinkingBudget: 0 };
+      }
     } else {
       generationConfig.thinkingConfig = {
         includeThoughts: true,

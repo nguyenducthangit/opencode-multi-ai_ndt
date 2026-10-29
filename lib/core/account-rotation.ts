@@ -45,18 +45,19 @@ export function toRotationManager(
       const account = manager.selectAccount(
         p,
         attempted,
-        getSelectionStrategy(),
+        getSelectionStrategy(p),
       );
       return account ? toRotationAccount(account) : null;
     },
     ensureFreshToken: (p, id, force) => manager.ensureFreshToken(p, id, force),
     markQuotaExhausted: (p, id, resetAt) =>
       manager.markQuotaExhausted(p, id, resetAt),
-    markEntitlementBlocked: (p, id) =>
-      manager.markEntitlementBlocked(p, id),
+    markEntitlementBlocked: (p, id, reason) =>
+      manager.markEntitlementBlocked(p, id, reason),
     recordCooldown: (p, id, reason, until) =>
       manager.recordCooldown(p, id, reason, until),
-    markDeadCandidate: (p, id) => manager.markDeadCandidate(p, id),
+    markDeadCandidate: (p, id, reason) =>
+      manager.markDeadCandidate(p, id, reason),
     touchLastUsed: (p, id) => manager.touchLastUsed(p, id),
     list: (p) => manager.list(p).map(toRotationAccount),
     get: (p, id) => {
@@ -163,15 +164,16 @@ export type KiroFetchManager = {
 export function toKiroFetchManager(manager: AccountManager): KiroFetchManager {
   return {
     selectAccount: (p, attempted, policy) =>
-      manager.selectAccount(p, attempted, policy ?? getSelectionStrategy()),
+      manager.selectAccount(p, attempted, policy ?? getSelectionStrategy(p)),
     ensureFreshToken: (p, id, force) => manager.ensureFreshToken(p, id, force),
     markQuotaExhausted: (p, id, resetAt) =>
       manager.markQuotaExhausted(p, id, resetAt),
-    markEntitlementBlocked: (p, id) =>
-      manager.markEntitlementBlocked(p, id),
+    markEntitlementBlocked: (p, id, reason) =>
+      manager.markEntitlementBlocked(p, id, reason),
     recordCooldown: (p, id, reason, until) =>
       manager.recordCooldown(p, id, reason, until),
-    markDeadCandidate: (p, id) => manager.markDeadCandidate(p, id),
+    markDeadCandidate: (p, id, reason) =>
+      manager.markDeadCandidate(p, id, reason),
     touchLastUsed: (p, id) => manager.touchLastUsed(p, id),
     list: (p) => manager.list(p),
     get: (p, id) => manager.get(p, id),

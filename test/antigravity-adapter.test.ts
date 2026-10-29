@@ -8,7 +8,7 @@ describe("Antigravity Adapter", () => {
     expect(antigravityAdapter.provider).toBe("antigravity");
     expect(antigravityAdapter.displayName).toContain("Antigravity");
     expect(antigravityAdapter.npmPackage).toBe("@ai-sdk/openai-compatible");
-    expect(antigravityAdapter.baseURL).toBe("https://daily-cloudcode-pa.googleapis.com");
+    expect(antigravityAdapter.baseURL).toBe("https://cloudcode-pa.googleapis.com");
     expect(antigravityAdapter.transport.kind).toBe("custom");
   });
 

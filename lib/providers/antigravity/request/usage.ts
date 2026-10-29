@@ -204,6 +204,8 @@ export async function fetchAntigravityUsage(
       const isTargetModel =
         modelId.startsWith("gemini-3.8-flash") ||
         modelId.startsWith("gemini-3.1-pro") ||
+        modelId.startsWith("gemini-2.5-pro") ||
+        modelId.startsWith("gemini-2.5-flash") ||
         modelId.startsWith("gemini-3.6-flash") ||
         modelId.startsWith("gemini-3-flash") ||
         modelId.startsWith("claude-sonnet") ||
@@ -223,6 +225,7 @@ export async function fetchAntigravityUsage(
         if (
           modelId.startsWith("gemini-3.8-flash") ||
           modelId.startsWith("gemini-3.1-pro") ||
+          modelId.startsWith("gemini-2.5-pro") ||
           modelId.startsWith("gemini-3.6-flash")
         ) {
           if (minGeminiFraction === undefined || frac < minGeminiFraction) {

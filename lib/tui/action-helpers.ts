@@ -13,6 +13,7 @@ export type TuiAction =
   | "tab-kiro"
   | "tab-antigravity"
   | "tab-opencode-go"
+  | "tab-deepseek"
   | "tab-next"
   | "toggle-locale"
   | "cycle-selection"
@@ -21,6 +22,8 @@ export type TuiAction =
   | "add-browser"
   | "add-codex-json"
   | "add-antigravity-9router"
+  | "add-deepseek-api-key"
+  | "add-deepseek-9router"
   | "add-kiro-api-key"
   | "add-kiro-idc"
   | "add-kiro-idc-arn"
@@ -82,6 +85,7 @@ const CODEX_ONLY: readonly ProviderKind[] = ["codex"];
 const KIRO_ONLY: readonly ProviderKind[] = ["kiro"];
 const ANTIGRAVITY_ONLY: readonly ProviderKind[] = ["antigravity"];
 const OPENCODE_GO_ONLY: readonly ProviderKind[] = ["opencode-go"];
+const DEEPSEEK_ONLY: readonly ProviderKind[] = ["deepseek"];
 const BROWSER_LOGIN_PROVIDERS: readonly ProviderKind[] = [
   "xai",
   "codex",
@@ -189,6 +193,22 @@ export const TUI_BINDINGS: readonly TuiBinding[] = Object.freeze([
       "Switch the active OpenCode Go key into OpenCode's auth.json — restart opencode for it to take effect",
     available: true,
     providers: OPENCODE_GO_ONLY,
+  },
+  {
+    key: "a",
+    action: "add-deepseek-api-key",
+    labelKey: "a  Add API key",
+    descKey: "Paste a DeepSeek API key and optional label",
+    available: true,
+    providers: DEEPSEEK_ONLY,
+  },
+  {
+    key: "o",
+    action: "add-deepseek-9router",
+    labelKey: "o  Import 9Router",
+    descKey: "Import DeepSeek accounts from ~/.n9router/db.json",
+    available: true,
+    providers: DEEPSEEK_ONLY,
   },
   {
     key: "s",
@@ -480,6 +500,7 @@ export function decodeTuiAction(key: TuiKeyEvent): TuiAction | undefined {
   if (name === "3" || seq === "3") return "tab-kiro";
   if (name === "4" || seq === "4") return "tab-antigravity";
   if (name === "5" || seq === "5") return "tab-opencode-go";
+  if (name === "6" || seq === "6") return "tab-deepseek";
 
   // Letter actions — shift distinguishes A/R/L
   const letter =

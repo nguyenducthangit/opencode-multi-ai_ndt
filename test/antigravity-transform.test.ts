@@ -78,7 +78,7 @@ describe("Antigravity Request Transformer", () => {
     });
 
     expect(payload.project).toBe("my-ag-project");
-    expect(payload.model).toBe("gemini-3.6-flash-high");
+    expect(payload.model).toBe("gemini-3.8-flash-tiered");
     expect(payload.userAgent).toBe("antigravity");
     expect(payload.request.sessionId).toBe("session-123");
     expect(payload.request.systemInstruction?.parts[0].text).toContain("You are an expert Flutter engineer.");
@@ -173,7 +173,7 @@ describe("Antigravity Request Transformer", () => {
 
     const payload = transformOpenAiToGemini(body, { projectId: "test-proj" });
     expect(payload.model).toBe("gemini-3-flash");
-    expect(payload.request.generationConfig?.thinkingConfig?.thinkingBudget).toBe(0);
+    expect(payload.request.generationConfig?.thinkingConfig).toBeUndefined();
   });
 
   it("configures thinkingBudget for low and high thinking models", () => {
@@ -181,14 +181,14 @@ describe("Antigravity Request Transformer", () => {
       { model: "gemini-3.8-flash-low", messages: [{ role: "user", content: "Hi" }] },
       { projectId: "test-proj" },
     );
-    expect(lowPayload.model).toBe("gemini-3.6-flash-low");
+    expect(lowPayload.model).toBe("gemini-3.8-flash-tiered");
     expect(lowPayload.request.generationConfig?.thinkingConfig?.thinkingBudget).toBe(2048);
 
     const highPayload = transformOpenAiToGemini(
       { model: "gemini-3.8-flash-high", messages: [{ role: "user", content: "Hi" }] },
       { projectId: "test-proj" },
     );
-    expect(highPayload.model).toBe("gemini-3.6-flash-high");
+    expect(highPayload.model).toBe("gemini-3.8-flash-tiered");
     expect(highPayload.request.generationConfig?.thinkingConfig?.thinkingBudget).toBe(8192);
 
     const effortPayload = transformOpenAiToGemini(
@@ -215,12 +215,12 @@ describe("Antigravity Request Transformer", () => {
 
     // Pro variants
     const pro1 = transformOpenAiToGemini({ model: "gemini-3.1-pro" }, { projectId: "p" });
-    expect(pro1.model).toBe("gemini-3.1-pro-low");
+    expect(pro1.model).toBe("gemini-2.5-pro");
 
     // Flash zero
     const flash1 = transformOpenAiToGemini({ model: "gemini-3-flash" }, { projectId: "p" });
     expect(flash1.model).toBe("gemini-3-flash");
-    expect(flash1.request.generationConfig?.thinkingConfig?.thinkingBudget).toBe(0);
+    expect(flash1.request.generationConfig?.thinkingConfig).toBeUndefined();
   });
 
   it("calibrates Claude Opus and Sonnet thinking budgets for token efficiency", () => {

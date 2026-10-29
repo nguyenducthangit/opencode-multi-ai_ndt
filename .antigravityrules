@@ -1,0 +1,481 @@
+# FLUTTER SENIOR ARCHITECT RULES — UNIVERSAL
+> **Dành cho AI Agent:** Đọc file này trước mọi thao tác code. Đây là bộ quy tắc dùng cho **mọi dự án Flutter**, là nguồn chân lý duy nhất (single source of truth) cho mọi quyết định kiến trúc, coding style, và tích hợp thư viện.
+> Stack: **Flutter + GetX + Dart 3.x**
+
+---
+
+## ⚠️ QUY TẮC ĐẶC BIỆT: NO ADS, NO PRO/VIP LOCK, NO COIN/WALLET (CHÍNH SÁCH BỎ QUA TÍNH NĂNG THƯƠNG MẠI)
+> **BẮT BUỘC CHO MỌI AI AGENT KHI LÀM VIỆC TRÊN DỰ ÁN NÀY:**
+> 1. **TUYỆT ĐỐI KHÔNG GẮN ADS**: Không thêm bất kỳ quảng cáo nào (mock ads, banner, interstitial, rewarded video, native ads, ad layouts). Bỏ qua mọi SDK AdMob, Pangle, UnityAds, AppLovin, IronSource.
+> 2. **TẤT CẢ TÍNH NĂNG MỞ KHÓA HOÀN TOÀN (100% FREE & UNLOCKED)**:
+>    - Tuyệt đối KHÔNG xây dựng tính năng Pro, VIP, In-App Purchase (IAP), Google Play Billing, Subscription, Paywall, hay màn hình nâng cấp tài khoản.
+>    - Tuyệt đối KHÔNG gắn icon khóa, vương miện (Crown), badge VIP, nhãn PRO trên bất kỳ UI item/tab/filter nào. Mọi tính năng, hiệu ứng, bộ lọc của app mẫu phải được dùng tự do không giới hạn.
+> 3. **KHÔNG XÂY DỰNG HỆ THỐNG VÍ / XU / ĐIỂM (NO COIN / WALLET / REWARD POINTS)**:
+>    - Không xây dựng ví xu, nhận thưởng, tích điểm, làm nhiệm vụ mở khóa, daily check-in nhận coin.
+>    - Mọi chức năng ở app gốc bắt trả xu thì sang app mới phải chạy trực tiếp miễn phí, không qua bước trừ điểm/coin.
+> 4. **TIẾT KIỆM TOKEN & BỎ QUA MODULE THƯƠNG MẠI KHI KHẢO SÁT**:
+>    - Khi quét source dịch ngược, nếu gặp package/class liên quan đến `billing`, `iap`, `ads`, `monetization`, `subscription`, `wallet`, `coin`: BỎ QUA NGAY LẬP TỨC. Không tốn thời gian hay token điều tra những phần này.
+
+---
+
+## 🔬 QUY TẮC PHỔ QUÁT: BÓC TÁCH GÓI DỮ LIỆU & REVERSE ENGINEERING NATIVE (.ZIP, .BIN, SHADER, DB, C++/NATIVE .SO)
+> **BẮT BUỘC CHO MỌI LOẠI APP KHI TRIỂN KHAI TỪNG TÍNH NĂNG:**
+> 1. **Bóc tách gói tài nguyên (Resource & Data Bundles)**: Bất kỳ app nào (media, editor, tool, utility, game, social, ecommerce) đều có các gói dữ liệu: `.zip` (templates, themes, assets, sticker bundles), `.bin`/`.json` (configs, model weights, offline database SQLite/Realm), shader (`.glsl`, `.frag`), hoặc audio/font. AI phải quét sạch `assets/`, `res/raw/`, local cache, store catalogs trước khi dựng UI.
+> 2. **Truy vết API tải online**: Nếu tài nguyên/danh sách tải từ server, AI phải tìm đúng endpoint URL, query params, auth headers, và logic parse/cache cục bộ.
+> 3. **Đọc sâu C++ / Native .so khi logic bị giấu**: Bất kỳ app nào giấu thuật toán, key, ma trận biến đổi, protocol mã hóa hoặc core processing trong `.so`, AI bắt buộc dùng công cụ (`nm`, `strings`, `readelf`, `objdump`, pseudocode) để tìm URL, struct, thuật toán gốc trước khi code. Không được tự suy đoán nếu chưa đối chiếu native!
+
+---
+
+## 🌐 4 NGUYÊN LÝ KỸ THUẬT CỐT LÕI (ÁP DỤNG PHỔ QUÁT CHO MỌI LOẠI APP)
+> **BẮT BUỘC TUÂN THỦ ĐỂ ỨNG DỤNG TÁI DỰNG CHẠY MƯỢT MÀ, KHÔNG LỖI NGẦM:**
+> 1. **Đồng bộ hệ quy chiếu & Không gian dữ liệu (Coordinate & Data Space Parity)**:
+>    - Dù là toạ độ đồ họa (pixel ảnh/canvas vs màn hình), bản đồ (GPS/lat-lng vs viewport), dòng thời gian media (video/audio timestamp vs scrubber), hay biểu đồ (data domain vs pixel scale): luôn ánh xạ chính xác không gian dữ liệu gốc sang không gian hiển thị UI.
+> 2. **Quản lý bộ nhớ, phân luồng & hiệu năng (Memory, Threading & OOM Safety)**:
+>    - Khi xử lý dữ liệu lớn (ảnh to, video stream, danh sách hàng ngàn item, file nhị phân lớn): luôn chia tầng **Interactive/Preview/Pagination** (mượt mà 60fps khi thao tác) và **Full-Processing/Export** (chỉ xử lý nặng khi lưu/xuất file hoặc batch task). Dùng Dart `compute` / `Isolate` cho các thuật toán tính toán nặng để không giật khung hình Main UI.
+> 3. **Quản lý trạng thái, phiên & lịch sử (State Lifecycle, Session & History/Undo Stack)**:
+>    - Quản lý trạng thái khép kín (GetX lifecycle `onInit`/`onClose`), hỗ trợ luồng hủy/retry khi rớt mạng, lưu trữ session/draft, và duy trì History/Undo/Redo stack nếu tính năng đó hỗ trợ hoàn tác.
+> 4. **Chuyển dịch công nghệ chuẩn nền tảng đích (Platform Engine Parity)**:
+>    - Khi app gốc dùng C/C++ native, OpenGL/Vulkan, Platform Channels, Shaders, hoặc WebViews: chuyển dịch sang các giải pháp chuẩn của Flutter (Dart FFI, Fragment Shaders `ui.FragmentProgram`, CustomPainter, MethodChannels) tương đương mà không làm nghẽn Main Thread UI.
+
+---
+
+## PHẦN A — ADMOB INTEGRATION RULES (CHỈ ÁP DỤNG KHI CÓ YÊU CẦU GẮN ADS CHÍNH THỨC)
+
+### A1. Pre-loading (Latency & Pre-Caching)
+- **KHÔNG** load quảng cáo tại màn hình có thời gian tương tác ngắn (Intro, Onboarding).
+- **BẮT BUỘC** gọi `.load()` cho `native_intro` / `native_intro_full` ngay từ màn hình trước, tận dụng 3–5 giây chờ của người dùng.
+
+### A2. Layout & Active View (Impression Fail Prevention)
+- **KHÔNG** để bất kỳ widget nào che 1 pixel quảng cáo Native → AdMob không tính Impression.
+- **KHÔNG** dùng `SizedBox(height: Get.height * 0.x)` hoặc nhiều `Spacer()` trên màn hình có Ads.
+- **BẮT BUỘC** bọc phần Ads + nút điều hướng trong `Align(bottomCenter)` + `Column(mainAxisSize: min)` để responsive mọi màn hình.
+
+### A3. Singleton & Chống Spam Request
+- **KHÔNG** khởi tạo hoặc gọi `.load()` nhiều lần cho cùng một Ad ID → gây "No Fill".
+- **BẮT BUỘC** dùng biến `static` duy nhất trong `ads_helper.dart`. Gọi `.load()` đúng 1 lần từ luồng khởi tạo.
+
+### A4. UX khi mất mạng (Broken UX Prevention)
+- **KHÔNG** chặn navigation hoặc ẩn nút Next khi quảng cáo chưa tải xong.
+- **BẮT BUỘC** nút "Next/Bỏ qua" luôn hoạt động dù Ads lỗi hay mất mạng.
+- Khi Ads lỗi: ẩn khung Ads gọn gàng, không để lại khoảng trắng lớn.
+
+---
+
+## PHẦN B — KIẾN TRÚC DỰ ÁN (Feature-First + Layered)
+
+### B1. Cấu trúc thư mục
+
+**`lib/app/` — Core Layer** (dùng chung toàn app):
+- `config/` → AppTheme, AppPages, Flavor/Environment (dev/staging/prod via flutter_dotenv hoặc flutter_flavorizr)
+- `constants/` → AppStrings, AppAssets (flutter_gen), AppColors, AppDimensions (static const)
+- `utils/` → Helpers (DateUtils, StringUtils), Extensions (on BuildContext/String), Validators
+- `widgets/` → AppButton, AppTextField, LoadingDialog, ErrorWidget, EmptyStateWidget, PaginatedListWidget
+- `services/` → GetxService: ApiService (Dio + interceptors), StorageService (Hive/SharedPrefs), NotificationService (FCM), AnalyticsService, CrashReportingService
+- `data/` → DTOs, Entities, Repository abstract interfaces + implementations
+- `l10n/` → Internationalization (.arb files, flutter_intl)
+
+**`lib/features/` — Feature Layer** (mỗi feature là module độc lập):
+- `binding/` → Bindings cho DI
+- `controller/` → GetxController (business logic, state)
+- `pages/` hoặc `views/` → UI chính (GetView)
+- `widgets/` → Widget riêng cho feature, đặt tên: `featureName_chucNangChinh_widget.dart`
+- `data/` → models/repos riêng nếu không dùng chung
+- `domain/` → Use cases nếu phức tạp (Clean Architecture)
+
+**Ngoài lib:**
+- `test/` → Mirror cấu trúc lib (unit/widget/integration)
+- `integration_test/` → E2E tests
+- `assets/` → images, icons, fonts (gen class bằng flutter_gen)
+
+**Senior Tips:**
+- Mỗi file < 300 dòng; nếu vượt → tách ra.
+- Dùng barrel files để export, không over-export.
+- Dự án lớn → tách thành separate packages (modularization).
+
+---
+
+## PHẦN C — GETX STATE MANAGEMENT RULES
+
+### C1. Dependency Injection
+- **LUÔN** dùng `Bindings` với `Get.lazyPut()` (chỉ tạo controller khi cần).
+- Inject dependency qua constructor của Controller, không dùng `Get.put()` trong `build()`.
+- `GetxService` cho persistent services (không dispose khi đổi route).
+- Dùng `GetMiddleware` cho auth guard / route protection.
+
+### C2. Reactive Programming
+- Dùng `.obs` (RxBool, RxList, RxString) cho dữ liệu thay đổi realtime.
+- `Obx(() => ...)` bọc widget **nhỏ nhất** có thể và **bắt buộc** chứa ít nhất 1 biến `.obs`. Nếu nội dung tĩnh → xóa Obx.
+- Với heavy computation hoặc update ít: dùng `GetBuilder` + `update(['id'])`.
+- Workers `ever()`, `once()`, `debounce()`, `interval()` khai báo trong `onInit()`, dispose trong `onClose()`.
+
+### C3. Navigation
+- Dùng named routes: `Get.toNamed(MRoutes.home)`.
+- Không cho quay lại (login→home): `Get.offAllNamed(MRoutes.home)`.
+- Tất cả routes khai báo trong `lib/app/config/m_routes.dart`.
+- Route pattern: mỗi Page khai báo `static getPageRoute(RouteSettings)` trả về `GetPageRoute` kèm `binding`.
+
+### C4. Resource Management
+- Override `onInit()`, `onReady()`, `onClose()` đúng cách.
+- Dispose `StreamSubscription`, `Timer`, `TextEditingController`, `AnimationController` trong `onClose()`.
+
+---
+
+## PHẦN D — CODING STANDARDS
+
+### D1. UI & Widget
+- `build()` > 50–60 dòng → **bắt buộc** tách Widget con vào `widgets/`.
+- **Luôn** dùng `const` cho widget tĩnh (Text, Padding, Icon, SizedBox).
+- Responsive: dùng `flutter_screenutil` hoặc `MediaQuery.sizeOf(context)`. Không hard-code pixel.
+- Assets: luôn dùng class generated (`AppAssets.imageName`), không dùng string literal.
+- Theming: `Theme.of(context).textTheme.bodyLarge`. Không inline styling. Hỗ trợ Dark Mode (`ThemeMode.system`).
+- Accessibility: thêm `Semantics(label: '...')`. Kiểm tra `MediaQuery.textScalerOf(context)` để layout không vỡ khi user tăng font size.
+- Tablet/Foldable: dùng `LayoutBuilder` hoặc `AdaptiveLayout` để layout thích ứng với screen size lớn.
+
+### D2. Layout Safety (Tránh RenderFlex Overflow)
+- `Text` trong `Row` → bọc trong `Expanded` nếu có thể dài.
+- `ListView`/`GridView` trong `Column` → bọc `Expanded` hoặc dùng `shrinkWrap: true`.
+- Màn hình có Form/TextField → bọc `SingleChildScrollView` + `SafeArea`.
+
+### D3. Logic & Dart
+- **Null Safety**: dùng `?`, `??`, `late`. Tránh `!` trừ khi chắc chắn 100%.
+- **Async**: `async/await` + `try-catch`. Kiểm tra `if (!context.mounted) return;` sau `await` trước khi dùng `BuildContext`.
+- **Typing**: khai báo kiểu đầy đủ. Không lạm dụng `var` hoặc `dynamic`.
+- **Repository Pattern**: Controller chỉ giao tiếp qua Repository interface, không gọi trực tiếp API.
+- **Models**: dùng `freezed` hoặc `json_serializable` cho immutable models.
+- **Error Handling**: centralize qua `Failure` class, hiển thị lỗi thân thiện qua `Get.snackbar`. Log lỗi lên Crashlytics.
+- **Performance**: không đặt heavy logic trong `build()`. Dùng `RepaintBoundary` cho animation nặng.
+
+### D4. Deprecated API — Phải thay thế ngay
+
+| Cũ (KHÔNG dùng) | Mới (BẮT BUỘC dùng) |
+|---|---|
+| `withOpacity(0.5)` | `withValues(alpha: 0.5)` |
+| `print(...)` | `debugPrint(...)` hoặc `logger.d(...)` |
+| `TextTheme.bodyText1/2` | `bodyLarge / bodyMedium` |
+| `TextTheme.headline1` | `displayLarge` |
+| `MaterialStateProperty` | `WidgetStateProperty` |
+| `WillPopScope` | `PopScope` |
+| `MediaQuery.of(context).size` | `MediaQuery.sizeOf(context)` |
+| `MediaQuery.of(context).textScaleFactor` | `MediaQuery.textScalerOf(context)` |
+| `late String?` | `late String` hoặc `String?` |
+| `ElevatedButton.styleFrom(...)` | `ButtonStyle` + `WidgetStateProperty` |
+
+---
+
+## PHẦN E — BARREL FILE PATTERN (part / part of)
+
+### Cơ chế
+Mỗi thư mục con trong feature (`bindings/`, `controllers/`, `pages/`, `widgets/`) có 1 **file barrel** trùng tên thư mục.
+
+**File barrel** làm 3 việc:
+1. Khai báo `library;` (ẩn danh, dòng đầu tiên).
+2. Thực hiện **tất cả** import cần thiết cho cả thư mục.
+3. Khai báo `part 'ten_file_con.dart';` cho từng file con.
+
+**File con** chỉ làm 1 việc:
+- Khai báo `part of 'controllers.dart';` (dòng đầu tiên) → **KHÔNG** import gì cả.
+
+**File tổng của Feature** (root feature barrel): chỉ `export` các barrel file con ra ngoài.
+
+**Cross-Feature Import**: chỉ được import file tổng qua đường dẫn tuyệt đối (`package:app_name/features/feedback/feedback.dart`). Không import trực tiếp file con.
+
+---
+
+## PHẦN F — ROUTES & FOLDER CREATION WORKFLOW
+
+### F1. File `m_routes.dart` (lib/app/config/m_routes.dart)
+- Chứa class `MRoutes` với `static const` cho mỗi route.
+- Hàm `static Route? onGenerateRoute(RouteSettings)` dùng `switch` map route name → Page.getPageRoute().
+- **Kiểm tra trước khi tạo**: nếu file đã tồn tại → chỉ thêm route mới, không tạo lại.
+
+### F2. Quy trình khi tạo feature mới
+1. Tạo folder `lib/features/<feature_name>/` với sub-folder: `controller/`, `binding/`, `pages/`, `widgets/`.
+2. Tạo file barrel cho từng sub-folder (theo Phần E).
+3. Cập nhật `m_routes.dart`: thêm constant + import Page + thêm case vào `onGenerateRoute`.
+
+### F3. Quy tắc đặt tên Widget
+- File: `featureName_chucNangChinh_widget.dart` (snake_case).
+- Class: `FeatureNameChucNangChinhWidget` (PascalCase).
+- Không đặt tên chung (`widget.dart`). Phải cụ thể, dễ tìm kiếm.
+
+---
+
+## PHẦN G — LINTER & PUBSPEC
+
+### G1. Linter Rules quan trọng
+- `prefer_single_quotes`, `prefer_const_constructors`, `prefer_const_literals_to_create_immutables`
+- `always_declare_return_types`, `avoid_dynamic_calls`, `avoid_relative_lib_imports`
+- `prefer_final_fields`, `prefer_final_locals`
+- `curly_braces_in_flow_control_structures`, `directives_ordering`, `require_trailing_commas`
+- `use_key_in_widget_constructors`, `camel_case_types`, `sort_constructors_first`
+- Analyzer exclude: `build/**`, `lib/generated/**`
+- Errors: `missing_required_param: error`, `invalid_use_of_protected_member: error`
+
+### G2. Core Dependencies (pubspec.yaml)
+
+```yaml
+# State management
+get: ^4.7.3
+
+# Storage & State Persistence
+shared_preferences: ^2.5.3
+hive_flutter: ^1.1.0          # Offline cache + state persistence
+
+# Networking
+dio: ^5.x.x                   # HTTP client với interceptors
+retrofit: ^4.x.x              # Type-safe API (tùy dự án)
+
+# Logging & Utils
+logger: ^2.6.2
+url_launcher: ^6.1.10
+connectivity_plus: ^6.1.4
+
+# Permissions & Device Info
+permission_handler: ^12.0.1
+device_info_plus: ^12.3.0
+package_info_plus: ^9.0.0
+
+# UI / Widgets
+flutter_svg: ^2.2.3
+share_plus: ^12.0.1
+flutter_rating_bar: ^4.0.1
+in_app_review: ^2.0.10
+cached_network_image: ^3.x.x  # Lazy load + cache ảnh network
+
+# Firebase (thêm tùy dự án)
+firebase_core: ^x.x.x
+firebase_crashlytics: ^x.x.x  # Crash reporting — BẮT BUỘC production
+firebase_analytics: ^x.x.x    # User behavior tracking
+firebase_messaging: ^x.x.x    # Push notifications (FCM)
+firebase_remote_config: ^x.x.x # Feature flags / A-B testing
+
+# Security
+flutter_secure_storage: ^9.x.x # Lưu token, sensitive data
+
+# Local shared library (ưu tiên dùng những gì có trong đây trước)
+exo_shared:
+  git:
+    url: git@github.com:trungs99/exo_shared.git
+    ref: main
+
+# dev_dependencies
+build_runner: ^2.6.0
+flutter_gen: ^5.11.0
+flutter_gen_runner: ^5.11.0
+flutter_launcher_icons: ^0.14.3
+flutter_flavorizr: ^2.0.0
+font_mapper: ^1.0.2
+```
+
+**flutter_gen config:** output `lib/app/utils`, line_length 100, integrations flutter_svg: true
+
+**Assets folders:** `assets/images/`, `assets/icons/`, `assets/icons/ic_flags/`, `assets/fonts/`
+
+**Font weights chuẩn:** Regular(400), Medium(500), SemiBold(600), Bold(700), Italic
+
+---
+
+## PHẦN H — PRODUCTION READINESS RULES
+
+### H1. Crash Reporting & Error Tracking
+- **BẮT BUỘC** tích hợp Firebase Crashlytics cho mọi production app.
+- Bọc `runApp` trong `runZonedGuarded` để bắt mọi lỗi không được handle.
+- Mọi `catch (e, stack)` trong controller → gọi `FirebaseCrashlytics.instance.recordError(e, stack)`.
+- Không bao giờ swallow exception bằng `catch (e) {}` rỗng.
+
+### H2. App Lifecycle Management
+- Implement `WidgetsBindingObserver` trong controller hoặc service cần biết trạng thái app.
+- Handle các state: `resumed` (foreground), `paused` (background), `detached` (bị kill).
+- Dùng để: refresh token khi app quay lại foreground, dừng timer khi background, lưu state trước khi detach.
+
+### H3. Deep Linking & Push Notification Navigation
+- Cấu hình Android App Links và iOS Universal Links.
+- FCM notification tap → parse payload → navigate đến đúng màn hình qua `Get.toNamed`.
+- Xử lý cả 2 case: app đang chạy (foreground/background) và app đã bị kill (terminated).
+
+### H4. Flavor / Environment Configuration
+- **BẮT BUỘC** có 3 flavor: `dev`, `staging`, `prod`.
+- Dùng `flutter_flavorizr` để generate flavor config.
+- Mỗi flavor có: App ID riêng, API base URL riêng, Firebase project riêng, App icon riêng.
+- Không hardcode bất kỳ URL hay key nào — luôn đọc từ flavor config.
+
+### H5. Feature Flags & Remote Config
+- Dùng Firebase Remote Config để toggle feature không cần update app.
+- Pattern: `RemoteConfigService.getBool('feature_new_home')` → enable/disable feature.
+- Fetch remote config khi app start, cache lại, apply cho session hiện tại.
+
+### H6. Analytics
+- Log user action quan trọng qua `AnalyticsService` (wrapper của Firebase Analytics).
+- Đặt tên event theo convention: `snake_case` (ví dụ: `home_banner_click`, `purchase_completed`).
+- Không log PII (tên, email, số điện thoại) lên analytics.
+
+### H7. Security
+- **flutter_secure_storage**: lưu token, refresh token, sensitive keys. Không dùng SharedPreferences cho dữ liệu nhạy cảm.
+- **SSL Pinning**: dùng `dio_certificate_pinning` cho app xử lý tài chính/y tế.
+- **ProGuard/R8**: enable obfuscation cho Android release build. Thêm rules cho thư viện dùng reflection.
+- **Không** print/log sensitive data lên console ở release build. Dùng `kDebugMode` để guard log.
+
+### H8. Pagination Pattern (Infinite Scroll)
+- Controller quản lý: `currentPage`, `isLoadingMore`, `hasMore`, `items` (RxList).
+- Load page tiếp theo khi scroll đến gần cuối (offset-based hoặc cursor-based).
+- Dùng `ListView.builder` + `ScrollController` listener hoặc package `infinite_scroll_pagination`.
+- Xử lý đủ 4 state: loading first page, loading more, empty, error.
+
+### H9. State Persistence (Khôi phục state sau kill app)
+- Dùng Hive để persist state quan trọng (giỏ hàng, draft, user preferences).
+- Controller đọc state từ Hive trong `onInit()`, ghi lại trong `onClose()` hoặc khi có thay đổi.
+- Không persist state nhạy cảm — dùng flutter_secure_storage cho data quan trọng.
+
+### H10. Platform Channels (Native Code)
+- Khi cần tính năng native không có package Flutter: dùng `MethodChannel`.
+- Đặt channel name theo convention: `com.company.appname/channel_name`.
+- Wrap MethodChannel call trong service class, không gọi trực tiếp từ controller hay UI.
+
+---
+
+## PHẦN I — CHECKLIST BẮT BUỘC CHO AI AGENT
+
+Trước khi output bất kỳ đoạn code nào, tự rà soát:
+
+1. **Obx check**: Có `Obx` nào bọc UI không có biến `.obs` không? → Xóa Obx đó.
+2. **Rx value check**: Có hàm logic nào quên gọi `.value` từ biến GetX không? → Sửa lại.
+3. **RenderFlex check**: `Text` trong `Row` có nguy cơ tràn? → Thêm `Expanded`.
+4. **Async context check**: Có dùng `BuildContext` sau `await` thiếu `if (!context.mounted) return;`? → Thêm vào.
+5. **AdMob layout check**: Màn hình có Ads có widget che khuất hoặc dùng SizedBox cứng không? → Sửa responsive.
+6. **Deprecated API check**: Có dùng `withOpacity`, `MaterialStateProperty`, `WillPopScope`, `print` không? → Thay bằng API mới.
+7. **Security check**: Có lưu token hay sensitive data vào SharedPreferences không? → Chuyển sang flutter_secure_storage.
+8. **Crash coverage check**: Mọi `catch` block có empty body không? → Thêm error log + Crashlytics record.
+
+---
+
+## PHẦN J — TESTING & CI/CD
+
+### Testing
+- Mục tiêu: 80%+ coverage. Thứ tự ưu tiên: Controller → Widget → Integration.
+- Pattern: **Arrange-Act-Assert**. Mock dependencies bằng `mockito`.
+- Test edge cases: null, network error, empty list, pagination end.
+- Run tests trước mỗi commit. Không merge PR nếu coverage giảm.
+
+### CI/CD
+- Tools: GitHub Actions hoặc Codemagic.
+- Pipeline: Lint → Test → Build APK/IPA (per flavor) → Deploy (Firebase App Distribution).
+- Git flow: feature branches + PR reviews. Commit format: `feat: add home screen`, `fix: crash on login`.
+- Bảo vệ branch `main` và `develop` — không push trực tiếp.
+
+### Performance Monitoring
+- Profile với Flutter DevTools (CPU, Memory, Rendering).
+- Không dùng `ListView` trong `ListView` → dùng `Sliver`.
+- Cache data: Hive / Isar. Lazy load images: `cached_network_image`.
+- Dùng `RepaintBoundary` cho animation nặng.
+- API: Dio với interceptors cho auth token refresh tự động.
+- Kiểm tra Jank (frame drop) bằng `flutter run --profile` trước release.
+
+---
+
+*File này là primary instruction cho AI Agent làm việc trên mọi dự án Flutter. Mọi thay đổi kiến trúc phải cập nhật file này.*
+
+---
+
+# PHẦN K — AUTONOMOUS RECONSTRUCTION QUEUE (ƯU TIÊN CAO NHẤT CHO PHOTO EDITOR)
+
+> Phần này ghi đè mọi hướng dẫn chung có thể khiến AI nhảy sang tính năng khác khi dựng lại app từ artifact/source dịch ngược.
+
+## K1. Mục tiêu và nguồn chân lý
+
+Mục tiêu là tái dựng app theo hành vi đã có bằng chứng từ app mẫu: UI, thao tác, state, render, asset, API/JSON, xử lý local và native. Screenshot chỉ là điểm bắt đầu, không phải đặc tả đủ.
+
+Trước một leaf feature, đọc `AGENTS.md`, tài liệu kiến trúc liên quan và các hồ sơ đã có. Sau đó chỉ mở các vùng source cần thiết để khép kín luồng; không quét vô mục đích toàn repository.
+
+Thứ tự tìm bằng chứng:
+
+1. Dart/Flutter hiện có, tài liệu `docs/architecture/`, audit trong `conversion_plan/`, các test và ảnh/video tham chiếu.
+2. Java/Kotlin/smali đã dịch ngược trong `dịchnguoc/`, `giảinen/` hoặc vị trí được tài liệu chỉ ra.
+3. Resource, asset, font, vector, bundle, file cấu hình, `.json`, `.zip`, protobuf/schema, database/cache và manifest.
+4. Request builder, interceptor, parser, DTO/model, cache và call site để khôi phục API/JSON thực tế.
+5. JNI và `.so` khi managed code đi vào native hoặc khi render/landmark/effect không được giải thích đầy đủ. Bắt đầu ở `android/app/src/main/jniLibs/`; kiểm tra `System.loadLibrary`, `native` declaration, `JNI_OnLoad`, `RegisterNatives`, export/xref, caller/callee, input/output và callback về managed code.
+
+Không coi tên file, string, pseudocode hoặc một endpoint interface là bằng chứng đủ. Không bịa API, JSON field, thuật toán làm đẹp, landmark, vùng mặt, shader, effect intensity hoặc asset thiếu.
+
+## K2. Cây tính năng và khóa tuần tự
+
+Luôn quản lý công việc thành cây cha → con → leaf. Chỉ leaf feature mới được code. Không đánh dấu cha hoàn thành chỉ vì UI cha đã xuất hiện.
+
+Ví dụ cấu trúc hợp lệ:
+
+```text
+Editor
+└── Beauty
+    ├── Face
+    │   ├── Face reshape
+    │   ├── Skin / retouch
+    │   └── Makeup
+    │       ├── Lip
+    │       ├── Blush
+    │       └── Eye makeup
+    ├── Body
+    └── Hair
+├── Crop
+│   ├── Free crop
+│   ├── Ratio presets
+│   └── Rotate / flip
+└── Filter
+    ├── Filter catalogue
+    ├── Preview / intensity
+    └── Apply / undo
+```
+
+Khi người dùng chọn `Beauty`, AI phải tự tìm và lập cây con thực tế từ code mẫu. Nếu chọn `Beauty → Face`, AI tiếp tục lập cây leaf cho Face. Nếu leaf đầu tiên là Makeup, chỉ được chuyển sang leaf Makeup tiếp theo khi Makeup hiện tại qua cổng nghiệm thu K4. Không được nhảy sang Crop, Filter, Body hoặc leaf kế tiếp chỉ vì gặp phần khó hay muốn tạo thêm UI.
+
+Khi người dùng ưu tiên một nhánh cha (ví dụ `Beauty`), hoàn thành và nghiệm thu toàn bộ descendants có dependency trong nhánh đó trước khi scheduler chọn nhánh ngang hàng (`Crop`, `Filter`). Khi tạo `dependsOn`, leaf đầu tiên của nhánh kế tiếp phải phụ thuộc vào leaf cuối cùng đã nghiệm thu của nhánh ưu tiên; không dựa vào thứ tự trình bày trong bảng.
+
+Sau lần khảo sát đầu tiên và sau mỗi leaf, duy trì `docs/reverse-engineering/REBUILD_QUEUE.md` với:
+
+| ID | Cha | Leaf / hành vi | Bằng chứng nguồn | File đích | Trạng thái | Điều kiện nghiệm thu | Vướng mắc |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+Trạng thái chỉ dùng: `planned`, `investigating`, `implementing`, `verifying`, `done`, `blocked`. Mỗi lúc chỉ có **một** leaf ở `investigating`, `implementing` hoặc `verifying`. Leaf `blocked` không được bị lấp bằng logic giả; ghi artifact/file/symbol hoặc dữ liệu runtime còn thiếu rồi chuyển sang leaf độc lập tiếp theo theo dependency.
+
+Nếu đang chạy bằng supervisor, `.rebuild-supervisor/tasks.json` là hàng đợi điều phối; `REBUILD_QUEUE.md` là hồ sơ kỹ thuật đọc được. Đồng bộ hai nơi, không tự sửa checkpoint, Git commit hoặc log do supervisor sở hữu.
+
+## K3. Chu trình bắt buộc cho một leaf feature
+
+Mỗi leaf đi hết chu trình sau trước khi đổi leaf:
+
+1. **Định vị:** xác định entry point UI, route, event, state/controller, model, renderer và màn hình/luồng quay về.
+2. **Truy vết:** lần theo `UI → event → state/controller → business logic → API/local/native → response/output → state → render/navigation`. Đọc caller và callee đến khi hiểu input, output, điều kiện, nhánh lỗi và side effect.
+3. **Tài nguyên và dữ liệu:** tìm asset/icon/font/template/mask/config/JSON/ZIP thực sự dùng. Với danh sách, ghi rõ API/nguồn dữ liệu, JSON path, parser/model, lọc/sắp xếp/pagination, item ID và nơi item được render/click.
+4. **Native/render nếu có:** khôi phục Java/Kotlin method ↔ JNI signature ↔ native symbol/function. Xác định vùng landmark/mask, tọa độ, scale/rotation, format ảnh, intensity/range/default, thứ tự layer và cách output quay lại UI. `libfacelandmarks`, `libfaceretouching`, `libfacedeformation`, `libEffectSDK` và các binary liên quan phải được điều tra khi evidence dẫn đến chúng; không tự suy luận từ tên thư viện.
+5. **Triển khai:** sửa đồng bộ model/parser → repository/service → pure logic → GetX state/controller → render/UI. Không tạo callback rỗng, UI demo, danh sách hard-code hoặc mock âm thầm ở đường chạy chính.
+6. **Kiểm chứng:** chạy đúng test/build/analyze; kiểm tra input hợp lệ, boundary/default, loading/empty/error, undo/redo/apply/cancel, lifecycle, resize/rotate và trạng thái quay lại editor nếu có. Với UI/render, đối chiếu ảnh/video app mẫu khi môi trường cho phép.
+7. **Lưu bằng chứng:** cập nhật queue, source-to-target map, file/symbol, thay đổi, lệnh kiểm tra và kết quả. Phân loại rõ `verified-static`, `verified-runtime`, `inferred`, `unknown`.
+
+## K4. Cổng nghiệm thu trước leaf tiếp theo
+
+Một leaf chỉ được chuyển `done` khi tất cả điều kiện liên quan đều đạt:
+
+- Có mapping nguồn → code đích và hành vi chính truy vết đủ hai chiều.
+- UI không chỉ giống ảnh; thao tác thực sự cập nhật state/render đúng.
+- Model/API/JSON hoặc resource mapping có bằng chứng, xử lý null/default/error phù hợp.
+- Native/render/landmark liên quan đã được xác minh, hoặc leaf được ghi `blocked` thay vì tuyên bố tương đương.
+- Không còn placeholder, TODO giả, API đoán hoặc asset thay thế âm thầm trong đường chạy chính.
+- Build, `flutter analyze` và test phù hợp đã chạy; ghi kết quả thực tế.
+- Báo cáo leaf có đủ bằng chứng để một agent khác tiếp tục mà không điều tra lại từ đầu.
+
+Reviewer độc lập phải kiểm tra diff và bằng chứng trước khi leaf được `done`. Nếu review fail, quay lại cùng leaf và sửa; không được sang leaf kế tiếp.
+
+## K5. Quy tắc đặc thù Beauty / Face / Makeup
+
+Với mọi tool Beauty/Face/Makeup, bắt buộc tạo bảng trước khi gắn UI:
+
+| UI control | Source event/resource | Parameter/effect key | Default/range/step/invert | Landmark/mask/region | Render/native path | Dart target | Evidence |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+
+Slider, preset, swatch, tab hoặc canvas overlay chỉ được tạo sau khi các cột liên quan có bằng chứng. Nếu app mẫu dùng material/mask/template tải từ ZIP/JSON hoặc API, lần theo cách resolve path, cache, parse, điều kiện tải và mapping khuôn mặt trước khi dựng UI.
+
+Khi thao tác ảnh/khuôn mặt phụ thuộc phép biến đổi tọa độ, kiểm tra: kích thước input/output, EXIF orientation, crop transform, device pixel ratio, mirror, zoom/pan, landmark coordinate space, thứ tự transform và export. Không dùng tọa độ màn hình trực tiếp thay cho tọa độ ảnh nếu source không làm vậy.
+
+## K6. Quy tắc tiến độ dài hạn
+
+Token/thời gian lớn không thay thế bằng chứng. AI được phép chạy lâu để điều tra, build, test và tiếp tục queue, nhưng phải có tiến triển kiểm chứng được sau mỗi lượt: file báo cáo, task state, source mapping, test result hoặc code thay đổi có lý do.
+
+Nếu một hướng điều tra lặp lại mà không tạo bằng chứng mới, dừng hướng đó, ghi ranh giới đã tìm và chuyển sang artifact/call site/runtime observation cụ thể hơn. Không lặp prompt “tiếp tục” vô hạn và không báo hoàn thành toàn app khi còn leaf `planned`, `investigating`, `implementing`, `verifying` hoặc `blocked`.

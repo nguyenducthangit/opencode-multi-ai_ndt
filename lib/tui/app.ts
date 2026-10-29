@@ -92,6 +92,9 @@ import { codexAdapter } from "../providers/codex/adapter.js";
 import { kiroAdapter } from "../providers/kiro/adapter.js";
 import { antigravityAdapter } from "../providers/antigravity/adapter.js";
 import { openCodeGoAdapter } from "../providers/opencode-go/adapter.js";
+import { deepseekAdapter } from "../providers/deepseek/adapter.js";
+import { addDeepSeekKey } from "../providers/deepseek/auth/add-key.js";
+import { importDeepSeekFrom9Router } from "../providers/deepseek/auth/import-9router.js";
 import { writeActiveKeyToAuthJson } from "../providers/opencode-go/auth/auth-file.js";
 import {
   normalizeAuthCookie,
@@ -189,6 +192,13 @@ const T = {
   opencodeGoSelectedBg: "#2a0f1e",
   opencodeGoSelectedText: "#f9a8d4",
 
+  deepseek: "#0284c7",
+  deepseekBright: "#38bdf8",
+  deepseekDim: "#0369a1",
+  deepseekBorder: "#0284c7",
+  deepseekSelectedBg: "#0c2338",
+  deepseekSelectedText: "#38bdf8",
+
   ready: "#4ade80",
   quota: "#fbbf24",
   cooling: "#22d3ee",
@@ -240,6 +250,7 @@ const ADAPTERS: Record<TuiTab, AnyProviderAdapter> = {
   kiro: kiroAdapter,
   antigravity: antigravityAdapter,
   "opencode-go": openCodeGoAdapter,
+  deepseek: deepseekAdapter,
 };
 
 type StatusTone = "ok" | "warn" | "err" | "info" | "neutral";
@@ -283,6 +294,12 @@ type OpenCodeGoAddWizard = {
   apiKey?: string;
   label?: string;
   workspaceId?: string;
+};
+
+type DeepSeekAddWizard = {
+  step: "key" | "label";
+  apiKey?: string;
+  label?: string;
 };
 
 type EditContext = {
@@ -401,6 +418,16 @@ function providerHue(tab: TuiTab): {
       border: T.opencodeGoBorder,
       selectedBg: T.opencodeGoSelectedBg,
       selectedText: T.opencodeGoSelectedText,
+    };
+  }
+  if (tab === "deepseek") {
+    return {
+      accent: T.deepseek,
+      bright: T.deepseekBright,
+      dim: T.deepseekDim,
+      border: T.deepseekBorder,
+      selectedBg: T.deepseekSelectedBg,
+      selectedText: T.deepseekSelectedText,
     };
   }
   return {
@@ -1741,7 +1768,9 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
     xai: stickyIndex(manager.providerView("xai")),
     codex: stickyIndex(manager.providerView("codex")),
     kiro: stickyIndex(manager.providerView("kiro")),
+    antigravity: stickyIndex(manager.providerView("antigravity")),
     "opencode-go": stickyIndex(manager.providerView("opencode-go")),
+    deepseek: stickyIndex(manager.providerView("deepseek")),
   });
   let gens: LiveGeneration = createLiveGeneration();
   let alive = true;
@@ -1758,6 +1787,7 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
   let kiroWizard: KiroAddWizard | null = null;
   let codexWizard: CodexAddWizard | null = null;
   let openCodeGoWizard: OpenCodeGoAddWizard | null = null;
+  let deepSeekWizard: DeepSeekAddWizard | null = null;
   let addAbort: AbortController | null = null;
   let focusPane: "accounts" | "actions" | "edit" = "accounts";
   let actionMenuLevel: ActionMenuLevel = createActionMenuLevel();
@@ -2202,6 +2232,7 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
     kiroWizard = null;
     codexWizard = null;
     openCodeGoWizard = null;
+    deepSeekWizard = null;
     editInput.visible = false;
     editInput.value = "";
     editInput.blur();
@@ -2795,6 +2826,110 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
     }
   }
 
+  function beginDeepSeekKeyWizard(): void {
+    if (activeTab !== "deepseek" || busy || addAbort) return;
+    if (editMode) cancelEdit();
+    confirmation = clearConfirmation();
+    deepSeekWizard = { step: "key" };
+    showWizardInput(
+      "sk-…",
+      "DeepSeek API key — Enter next · Esc cancel",
+    );
+  }
+
+  async function advanceDeepSeekWizard(): Promise<void> {
+    if (!deepSeekWizard) {
+      cancelEdit();
+      return;
+    }
+    const raw = editInput.value;
+    const value = raw.trim();
+    try {
+      if (deepSeekWizard.step === "key") {
+        if (!value) {
+          setStatus({ text: "API key is required", tone: "err" });
+          return;
+        }
+        deepSeekWizard = { step: "label", apiKey: value };
+        showWizardInput(
+          "(blank = derived)",
+          "Label (optional) — Enter add · Esc cancel",
+        );
+        return;
+      }
+      const apiKey = deepSeekWizard.apiKey ?? "";
+      const label = value || undefined;
+      cancelEdit();
+      busy = true;
+      try {
+        const account = await addDeepSeekKey({
+          apiKey,
+          label,
+          manager,
+        });
+        restoreSelectionById("deepseek", account.accountId);
+        setStatus({
+          text: `added DeepSeek account ${account.label || account.accountId}`,
+          tone: "ok",
+        });
+        refreshViews();
+      } catch (err) {
+        setStatus({
+          text: `add failed: ${(err as Error).message}`,
+          tone: "err",
+        });
+      } finally {
+        busy = false;
+        refreshViews();
+      }
+    } catch (err) {
+      setStatus({
+        text: `wizard failed: ${(err as Error).message}`,
+        tone: "err",
+      });
+      cancelEdit();
+    }
+  }
+
+  async function start9RouterDeepSeekImport(): Promise<void> {
+    if (busy || addAbort) return;
+    if (editMode) cancelEdit();
+    confirmation = clearConfirmation();
+    busy = true;
+    setStatus({
+      text: "scanning 9Router DeepSeek accounts from ~/.n9router/db.json…",
+      tone: "info",
+    });
+    try {
+      const res = await importDeepSeekFrom9Router({ manager });
+      if (res.imported > 0) {
+        setStatus({
+          text: `imported ${res.imported} DeepSeek account(s) from 9Router (skipped ${res.skipped})`,
+          tone: "ok",
+        });
+      } else if (res.skipped > 0) {
+        setStatus({
+          text: `all ${res.skipped} 9Router DeepSeek account(s) already exist in pool`,
+          tone: "neutral",
+        });
+      } else {
+        setStatus({
+          text: "no DeepSeek accounts found in 9Router",
+          tone: "warn",
+        });
+      }
+      refreshViews();
+    } catch (err) {
+      setStatus({
+        text: `9Router import failed: ${(err as Error).message}`,
+        tone: "err",
+      });
+    } finally {
+      busy = false;
+      refreshViews();
+    }
+  }
+
   function beginEdit(field: EditField): void {
     const acc = selectedAccount();
     if (!acc) return;
@@ -2848,6 +2983,10 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
     }
     if (openCodeGoWizard) {
       await advanceOpenCodeGoWizard();
+      return;
+    }
+    if (deepSeekWizard) {
+      await advanceDeepSeekWizard();
       return;
     }
     if (!editContext) {
@@ -3481,6 +3620,9 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
       case "tab-opencode-go":
         switchTab("opencode-go");
         return;
+      case "tab-deepseek":
+        switchTab("deepseek");
+        return;
       case "tab-next":
         switchTab(nextTab(activeTab));
         return;
@@ -3855,24 +3997,33 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
               manager.providerView("opencode-go").list()[
                 selection["opencode-go"]!
               ]?.accountId,
+            deepseek:
+              manager.providerView("deepseek").list()[selection.deepseek!]
+                ?.accountId,
           };
           gens = bumpGeneration(gens, "xai");
           gens = bumpGeneration(gens, "codex");
           gens = bumpGeneration(gens, "kiro");
           gens = bumpGeneration(gens, "antigravity");
           gens = bumpGeneration(gens, "opencode-go");
+          gens = bumpGeneration(gens, "deepseek");
           await manager.reloadFromDisk();
           restoreSelectionById("xai", keep.xai);
           restoreSelectionById("codex", keep.codex);
           restoreSelectionById("kiro", keep.kiro);
           restoreSelectionById("antigravity", keep.antigravity);
           restoreSelectionById("opencode-go", keep["opencode-go"]);
+          restoreSelectionById("deepseek", keep.deepseek);
           setStatus({ text: "reloaded from disk", tone: "ok" });
           refreshViews();
         });
         return;
       }
       case "add-device":
+        if (activeTab === "deepseek") {
+          beginDeepSeekKeyWizard();
+          return;
+        }
         if (activeTab === "opencode-go") {
           beginOpenCodeGoKeyWizard();
           return;
@@ -3888,6 +4039,10 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
         void startAdd("device");
         return;
       case "add-browser":
+        if (activeTab === "deepseek") {
+          beginDeepSeekKeyWizard();
+          return;
+        }
         if (activeTab === "opencode-go") {
           beginOpenCodeGoKeyWizard();
           return;
@@ -3897,6 +4052,26 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
           return;
         }
         void startAdd("browser");
+        return;
+      case "add-deepseek-api-key":
+        if (activeTab !== "deepseek") {
+          setStatus({
+            text: "switch to DeepSeek tab for API key add",
+            tone: "warn",
+          });
+          return;
+        }
+        beginDeepSeekKeyWizard();
+        return;
+      case "add-deepseek-9router":
+        if (activeTab !== "deepseek") {
+          setStatus({
+            text: "switch to DeepSeek tab for 9Router import",
+            tone: "warn",
+          });
+          return;
+        }
+        void start9RouterDeepSeekImport();
         return;
       case "add-antigravity-9router":
         if (activeTab !== "antigravity") {
@@ -3946,6 +4121,10 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
         }
         if (activeTab === "antigravity") {
           void start9RouterImport();
+          return;
+        }
+        if (activeTab === "deepseek") {
+          void start9RouterDeepSeekImport();
           return;
         }
         if (activeTab !== "codex") {
@@ -4306,6 +4485,7 @@ export async function runTui(opts: RunTuiOptions = {}): Promise<void> {
       action !== "tab-kiro" &&
       action !== "tab-antigravity" &&
       action !== "tab-opencode-go" &&
+      action !== "tab-deepseek" &&
       action !== "tab-next"
     ) {
       return;

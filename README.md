@@ -339,3 +339,135 @@ The spine is `storage → accounts → (rotation-fetch | Kiro custom transport) 
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+# Autonomous reconstruction supervisor
+
+Use the checkpointed supervisor to reconstruct an authorized application over many
+independent agent sessions. It runs separate planning, implementation, and review
+turns; keeps logs and evidence outside the commit; and creates a local commit only
+when the configured checks pass and the reviewer returns `VERDICT: PASS`.
+
+```bash
+bun scripts/rebuild-supervisor.ts start \
+  --target /absolute/path/to/rebuilt-app \
+  --source /absolute/path/to/decompiled-source \
+  --artifact /absolute/path/to/original.apk \
+  --reference /absolute/path/to/screenshots \
+  --goal "Reconstruct the whole application from the supplied artifact" \
+  --test "./gradlew test" \
+  --test "./gradlew assembleDebug" \
+  --max-cycles 0
+```
+
+`--max-cycles 0` keeps selecting planned tasks until the queue is empty. Stop it
+with `Ctrl-C`, then continue from its checkpoint with:
+
+```bash
+bun scripts/rebuild-supervisor.ts resume --target /absolute/path/to/rebuilt-app --max-cycles 0
+```
+
+All phases (plan, build, review) default to Gemini 3.8 Flash (`antigravity-multi/gemini-3.8-flash-high`), leveraging your multi-account pool.
+DeepSeek or Codex can optionally be assigned to review or plan (e.g. `--review-model codex-multi/gpt-6-astra#high` or `--review-model deepseek-multi/deepseek-reasoner`).
+If Codex or DeepSeek runs out of tokens, rate limits, or errors out at any time during the night, the supervisor automatically catches it, falls back to Gemini 3.8 Flash (`antigravity-multi/gemini-3.8-flash-high`), and permanently switches subsequent tasks to Gemini 3.8 Flash so the overnight pipeline never halts. It also features a self-repair attempt loop (up to 2 attempts per task) if build or test errors occur.
+
+The target must start with a clean Git working tree. The supervisor stores logs,
+plans, task state, and review reports in `.rebuild-supervisor/`, never pushes, and
+does not commit that directory. See `bun scripts/rebuild-supervisor.ts` for all
+options.
+
+## Strict reconstruction validation
+
+Use the strict gate for reconstructed mobile apps. `--require-runtime` makes a
+leaf fail unless it runs on a connected Android emulator/device and leaves
+runtime evidence. Commands support `{target}`, `{task}`, and `{evidence}`.
+
+```bash
+bun scripts/rebuild-supervisor.ts start \
+  --target /absolute/path/to/app \
+  --source /absolute/path/to/decompiled-source \
+  --artifact /absolute/path/to/original.apk \
+  --reference /absolute/path/to/reference-media \
+  --goal "Reconstruct one evidence-backed leaf at a time" \
+  --test "flutter analyze" \
+  --runtime-test "bun /absolute/path/to/opencode-multi-ai/scripts/android-runtime-gate.ts --target {target} --task {task} --integration integration_test" \
+  --require-runtime \
+  --max-cycles 0
+```
+
+The planner must attach a validation contract to every leaf: unit command,
+runtime command, performance command when relevant, and evidence artifacts.
+The supervisor runs all of them sequentially. It rejects a task that has only
+state assertions, a compile/static-analysis result, no source/test report, no
+runtime command when runtime is required, missing evidence artifacts, Android
+runtime exceptions, or a `Skipped N frames` value above the configured limit.
+Runtime artifacts are stored under
+`.rebuild-supervisor/evidence/<task-id>/`.
+
+## Reference, visual, and native evidence
+
+Before rebuilding a visual flow, record the installed reference app on a test
+device. The scenario is a small, reviewable JSON script; its screenshots and
+logcat become the immutable reference for matching checkpoints.
+
+```bash
+bun scripts/reference-recorder.ts \
+  --device <adb-serial> \
+  --scenario /absolute/path/to/editor-flow.json \
+  --out /absolute/path/to/reference-runs/editor-flow
+```
+
+```json
+{
+  "package": "com.example.reference",
+  "activity": ".MainActivity",
+  "steps": [
+    { "action": "tap", "x": 540, "y": 1650, "name": "open-edit" },
+    { "action": "wait", "durationMs": 800 },
+    { "action": "screenshot", "name": "editor-ready" }
+  ]
+}
+```
+
+Compare an implementation checkpoint against its matching reference screenshot.
+The command writes a visual difference PNG, reports PSNR, and fails below the
+chosen threshold.
+
+```bash
+bun scripts/visual-regression.ts \
+  --expected reference-runs/editor-flow/003-editor-ready.png \
+  --actual .rebuild-supervisor/evidence/editor-flow/editor-ready.png \
+  --out .rebuild-supervisor/evidence/editor-flow/editor-ready-diff.png \
+  --min-psnr 40
+```
+
+On every new supervisor run with `--source`, the native intelligence index is
+created automatically at `.rebuild-supervisor/intelligence/native-index.json`.
+It inventories `.so`, models, archives, databases, shaders, JNI and network
+leads before planning. It is also available on demand:
+
+```bash
+bun scripts/native-intelligence-index.ts --source /absolute/path/to/decompiled-source --target /absolute/path/to/app
+```
+
+Use `--analysis-timeout-minutes 35` (the default) to terminate an individual
+source-analysis worker that stops producing a blueprint. This prevents a live
+provider process from holding the complete reconstruction queue forever.
+
+For unattended hand-off from analysis to build/review, use the autopilot. It
+retries only blueprints that are absent after a timed-out worker, then resumes
+the existing checkpoint without recreating the plan.
+
+```bash
+bun scripts/rebuild-autopilot.ts --target /absolute/path/to/app --source /absolute/path/to/decompiled-source --analysis-concurrency 5 --analysis-timeout-minutes 35 --max-cycles 0
+```
+
+## Leaf pipeline and repair ownership
+
+Each leaf has one writer at a time. The supervisor records a temporary writer
+lease under `.rebuild-supervisor/locks/`: the Builder owns the initial attempt;
+after a failed test or review, a fresh Repair Agent owns the retry and receives
+the exact validation/report output. Runtime/performance validation and the
+read-only reviewer run in parallel after the writer releases its lease. A leaf
+cannot unlock dependent code or commit until both gates pass and the required
+evidence exists. This keeps shared canvas/controller files safe while avoiding
+idle time between validation and source review.
